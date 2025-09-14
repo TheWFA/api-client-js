@@ -17,7 +17,7 @@ const defaultConfig: APIClientConfig = {
     baseURL: 'https://api.thewfa.org.uk',
 };
 
-export class WFAAPIClient {
+export class MatchDayClient {
     private config: APIClientConfig;
 
     public readonly matches = new MatchResource(this);
