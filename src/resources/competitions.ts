@@ -1,6 +1,6 @@
 import qs from 'qs';
 
-import { WFAAPIClient } from '../client';
+import { MatchDayClient } from '../client';
 import { BaseListQuery } from '../types/api';
 import { Competition, CompetitionPartial, CompetitionTableRow } from '../types/competitions';
 import { TeamPartial } from '../types/team';
@@ -8,7 +8,7 @@ import { TeamPartial } from '../types/team';
 import { APIResource } from './resource';
 
 export class CompetitionsResource extends APIResource {
-    constructor(client: WFAAPIClient) {
+    constructor(client: MatchDayClient) {
         super(client, '/competitions');
     }
 

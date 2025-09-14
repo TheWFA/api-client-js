@@ -1,13 +1,13 @@
 import qs from 'qs';
 
-import { WFAAPIClient } from '../client';
+import { MatchDayClient } from '../client';
 import { BaseListQuery } from '../types/api';
 import { SeasonPartial } from '../types/season';
 
 import { APIResource } from './resource';
 
 export class SeasonsResource extends APIResource {
-    constructor(client: WFAAPIClient) {
+    constructor(client: MatchDayClient) {
         super(client, '/seasons');
     }
 

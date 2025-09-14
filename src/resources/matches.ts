@@ -1,12 +1,12 @@
 import qs from 'qs';
 
-import { WFAAPIClient } from '../client';
+import { MatchDayClient } from '../client';
 import { FullMatch, Match, MatchQuery } from '../types/match';
 
 import { APIResource } from './resource';
 
 export class MatchResource extends APIResource {
-    constructor(client: WFAAPIClient) {
+    constructor(client: MatchDayClient) {
         super(client, '/matches');
     }
 

@@ -1,10 +1,10 @@
-import { WFAAPIClient } from '../client';
+import { MatchDayClient } from '../client';
 import { Person } from '../types/person';
 
 import { APIResource } from './resource';
 
 export class PersonsResource extends APIResource {
-    constructor(client: WFAAPIClient) {
+    constructor(client: MatchDayClient) {
         super(client, '/persons');
     }
 

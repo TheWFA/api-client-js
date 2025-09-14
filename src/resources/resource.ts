@@ -1,10 +1,10 @@
-import { WFAAPIClient } from '../client';
+import { MatchDayClient } from '../client';
 
 export abstract class APIResource {
-    protected client: WFAAPIClient;
+    protected client: MatchDayClient;
     protected basePath: string;
 
-    constructor(client: WFAAPIClient, basePath: string) {
+    constructor(client: MatchDayClient, basePath: string) {
         this.basePath = basePath;
         this.client = client;
     }
