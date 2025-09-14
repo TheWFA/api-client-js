@@ -1,7 +1,8 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { FullMatch, Match, MatchQuery } from '../types/match';
+import { FullMatch, Match } from '../types/match';
+import { MatchQuery } from '../types/match-query';
 
 import { APIResource } from './resource';
 
