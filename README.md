@@ -1,4 +1,6 @@
-# WFA API Client (Powerchair Football)
+# WFA API Client (Powerchair Football) - COMING SOON
+
+## THE API IS CURRENTLY UNRELEASED
 
 A TypeScript/JavaScript client for accessing **Wheelchair Football Association (WFA)** data.
 
