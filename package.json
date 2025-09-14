@@ -1,84 +1,84 @@
 {
-  "name": "@thewfa/api-client",
-  "version": "1.0.0",
-  "description": "Powerchair football API client",
-  "license": "MIT",
-  "author": "",
-  "type": "commonjs",
-  "main": "./dist/main/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/module/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/module/index.d.ts",
-      "import": "./dist/module/index.js",
-      "require": "./dist/main/index.js",
-      "default": "./dist/module/index.js"
+    "name": "@thewfa/api-client",
+    "version": "0.1.0",
+    "description": "Powerchair football API client",
+    "license": "MIT",
+    "author": "",
+    "type": "commonjs",
+    "main": "./dist/main/index.js",
+    "module": "./dist/module/index.js",
+    "types": "./dist/module/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/module/index.d.ts",
+            "import": "./dist/module/index.js",
+            "require": "./dist/main/index.js",
+            "default": "./dist/module/index.js"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/thewfa/api-client-js.git"
+    },
+    "keywords": [
+        "typescript",
+        "api",
+        "powerchair",
+        "data",
+        "sports",
+        "football",
+        "powersoccer",
+        "soccer"
+    ],
+    "sideEffects": false,
+    "engines": {
+        "node": ">=18"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist/main",
+        "dist/module",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "run-p build:*",
+        "build:main": "tsc -p tsconfig.json",
+        "build:module": "tsc -p tsconfig.module.json",
+        "clean": "rimraf dist",
+        "prepublishOnly": "npm run build",
+        "lint": "eslint src --ext .ts",
+        "lint:fix": "eslint src --ext .ts --fix",
+        "format": "prettier --check .",
+        "format:fix": "prettier --write .",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "@types/qs": "^6.14.0",
+        "@typescript-eslint/eslint-plugin": "^8.43.0",
+        "@typescript-eslint/parser": "^8.43.0",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-eslint-comments": "^3.2.0",
+        "eslint-plugin-import": "^2.32.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.1.6",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^3.6.2",
+        "rimraf": "^6.0.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.9.2"
+    },
+    "lint-staged": {
+        "*.ts": [
+            "eslint --fix",
+            "prettier --write"
+        ]
+    },
+    "dependencies": {
+        "qs": "^6.14.0"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thewfa/api-client-js.git"
-  },
-  "keywords": [
-    "typescript",
-    "api",
-    "powerchair",
-    "data",
-    "sports",
-    "football",
-    "powersoccer",
-    "soccer"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "files": [
-    "dist/main",
-    "dist/module",
-    "CHANGELOG.md",
-    "LICENSE",
-    "README.md"
-  ],
-  "scripts": {
-    "build": "run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
-    "build:module": "tsc -p tsconfig.module.json",
-    "clean": "rimraf dist",
-    "prepublishOnly": "npm run build",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write .",
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "@types/qs": "^6.14.0",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-import": "^2.32.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.6",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.6.2",
-    "rimraf": "^6.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.9.2"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
-  "dependencies": {
-    "qs": "^6.14.0"
-  }
 }
