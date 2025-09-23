@@ -6,14 +6,15 @@ import { SearchResource } from './resources/search';
 import { httpResponseToAPIError } from './errors';
 import { MatchResource } from './resources/matches';
 import { parseDates } from './time';
+import { APIError } from './types/errors';
 
 export type APIClientConfig = {
-    token: string;
-    baseURL: string;
+    baseURL?: string;
+    apiToken?: string;
+    accessToken?: string;
 };
 
 const defaultConfig: APIClientConfig = {
-    token: '',
     baseURL: 'https://api.thewfa.org.uk',
 };
 
@@ -27,17 +28,15 @@ export class MatchDayClient {
     public readonly persons = new PersonsResource(this);
     public readonly search = new SearchResource(this);
 
-    constructor(config: Partial<APIClientConfig> & Pick<APIClientConfig, 'token'>) {
+    constructor(config: APIClientConfig) {
         this.config = {
             ...defaultConfig,
             ...config,
         };
+    }
 
-        if (!config.token || config.token.length < 10) {
-            throw new Error(
-                'Invalid API token. Please create one at https://developer.thewfa.org.uk',
-            );
-        }
+    setAccessToken(token: string) {
+        this.config.accessToken = token;
     }
 
     async makeRequest<T>(path: string, init?: RequestInit): Promise<T> {
@@ -45,8 +44,16 @@ export class MatchDayClient {
             'Content-Type': 'application/json',
         };
 
-        if (this.config.token) {
-            defaultHeaders['Authorization'] = `Token ${this.config.token}`;
+        if (!this.config.accessToken && !this.config.apiToken) {
+            throw new APIError('No authentication method set');
+        }
+
+        if (this.config.apiToken) {
+            defaultHeaders['X-API-Key'] = `Key ${this.config.apiToken}`;
+        }
+
+        if (this.config.accessToken) {
+            defaultHeaders['Authorization'] = `Bearer ${this.config.accessToken}`;
         }
 
         const res = await fetch(this.config.baseURL + path, {
