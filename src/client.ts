@@ -10,7 +10,7 @@ import { APIError } from './types/errors';
 
 export type APIClientConfig = {
     baseURL?: string;
-    apiToken?: string;
+    apiKey?: string;
     accessToken?: string;
 };
 
@@ -44,12 +44,12 @@ export class MatchDayClient {
             'Content-Type': 'application/json',
         };
 
-        if (!this.config.accessToken && !this.config.apiToken) {
+        if (!this.config.accessToken && !this.config.apiKey) {
             throw new APIError('No authentication method set');
         }
 
-        if (this.config.apiToken) {
-            defaultHeaders['X-API-Key'] = `Key ${this.config.apiToken}`;
+        if (this.config.apiKey) {
+            defaultHeaders['X-API-Key'] = `Key ${this.config.apiKey}`;
         }
 
         if (this.config.accessToken) {

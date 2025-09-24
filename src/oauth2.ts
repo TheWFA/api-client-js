@@ -19,6 +19,11 @@ export type AccessTokenReturn = {
     scope: string;
 };
 
+export type AuthorizeReturn = {
+    url: string;
+    pkceVerifier?: string;
+};
+
 const defaultConfig: Partial<OAuthClientConfig> = {
     authURL: 'https://auth.thewfa.org.uk',
     pkceMethod: 'S256',
@@ -26,8 +31,6 @@ const defaultConfig: Partial<OAuthClientConfig> = {
 
 export class MatchDayOAuthClient {
     private config: OAuthClientConfig;
-    /** Stored between authorize() and exchange() */
-    private pkceVerifier?: string;
 
     constructor(config: OAuthClientConfig) {
         this.config = { ...defaultConfig, ...config };
@@ -43,7 +46,11 @@ export class MatchDayOAuthClient {
      * @param state - Optional opaque string for CSRF protection and request correlation.
      * @returns Fully constructed authorization URL.
      */
-    async authorize(scopes: OAuth2ScopeId[], redirectURL: string, state?: string): Promise<string> {
+    async authorize(
+        scopes: OAuth2ScopeId[],
+        redirectURL: string,
+        state?: string,
+    ): Promise<AuthorizeReturn> {
         const base = new URL('/api/auth/oauth2/authorize', this.config.authURL!);
 
         base.searchParams.set('response_type', 'code');
@@ -56,20 +63,20 @@ export class MatchDayOAuthClient {
         const mustUsePkce = !this.config.clientSecret; // public client
         const shouldUsePkce = mustUsePkce || !!this.config.usePKCE;
 
+        let pkceVerifier = undefined;
+
         if (shouldUsePkce) {
             const method = this.config.pkceMethod ?? 'S256';
             // Generate/stash a verifier for the upcoming token exchange
-            this.pkceVerifier = generateCodeVerifier();
+            pkceVerifier = generateCodeVerifier();
             const challenge =
-                method === 'S256'
-                    ? await toCodeChallengeS256(this.pkceVerifier)
-                    : this.pkceVerifier;
+                method === 'S256' ? await toCodeChallengeS256(pkceVerifier) : pkceVerifier;
 
             base.searchParams.set('code_challenge', challenge);
             base.searchParams.set('code_challenge_method', method);
         }
 
-        return base.toString();
+        return { url: base.toString(), pkceVerifier };
     }
 
     /**
@@ -79,7 +86,11 @@ export class MatchDayOAuthClient {
      * @param code - Authorization code returned to your redirect URI.
      * @param redirectURL - The same redirect URI you used in authorize().
      */
-    async exchange(code: string, redirectURL: string): Promise<AccessTokenReturn> {
+    async exchange(
+        code: string,
+        redirectURL: string,
+        pkceVerifier?: string,
+    ): Promise<AccessTokenReturn> {
         if (!this.config.clientId) {
             throw new APIError('A client id is required to exchange code');
         }
@@ -97,8 +108,8 @@ export class MatchDayOAuthClient {
         }
 
         // If PKCE was used in authorize(), include the verifier
-        if (this.pkceVerifier) {
-            body.set('code_verifier', this.pkceVerifier);
+        if (pkceVerifier) {
+            body.set('code_verifier', pkceVerifier);
         }
 
         const res = await fetch(`${this.config.authURL}/api/auth/oauth2/token`, {
@@ -129,9 +140,6 @@ export class MatchDayOAuthClient {
         if (!json?.access_token) {
             throw new APIError('Token exchange succeeded but no access_token was returned');
         }
-
-        // Clear verifier after successful exchange (avoid reuse)
-        this.pkceVerifier = undefined;
 
         return json;
     }
