@@ -1,38 +1,38 @@
 {
-  "root": true,
-  "env": {
-    "node": true,
-    "es2021": true
-  },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "sourceType": "module"
-  },
-  "plugins": ["@typescript-eslint", "import", "eslint-comments"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:eslint-comments/recommended",
-    "prettier"
-  ],
-  "rules": {
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": "warn",
-
-    "import/order": [
-      "warn",
-      {
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
-        "newlines-between": "always"
-      }
+    "root": true,
+    "env": {
+        "node": true,
+        "es2021": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": ["./tsconfig.json", "./tsconfig.eslint.json"],
+        "sourceType": "module"
+    },
+    "plugins": ["@typescript-eslint", "import", "eslint-comments"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
+        "plugin:eslint-comments/recommended",
+        "prettier"
     ],
-    "import/no-unresolved": "error",
+    "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-explicit-any": "warn",
 
-    "eslint-comments/no-unused-disable": "error",
-    "no-console": "warn"
-  },
-  "ignorePatterns": ["dist/", "node_modules/"]
+        "import/order": [
+            "warn",
+            {
+                "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+                "newlines-between": "always"
+            }
+        ],
+        "import/no-unresolved": "error",
+
+        "eslint-comments/no-unused-disable": "error",
+        "no-console": "warn"
+    },
+    "ignorePatterns": ["dist/", "node_modules/", "jest.config.ts", "*.config.ts"]
 }

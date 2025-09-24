@@ -25,7 +25,7 @@
         "pretty": true,
 
         "lib": ["ES2020", "DOM"],
-        "types": ["node"],
+        "types": ["node", "jest"],
         "typeRoots": ["node_modules/@types", "src/types"],
 
         "skipLibCheck": true
