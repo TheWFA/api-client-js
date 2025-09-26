@@ -1,10 +1,10 @@
 {
     "name": "@thewfa/api-client",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "Powerchair football API client",
     "license": "MIT",
     "author": "",
-    "type": "commonjs",
+    "type": "module",
     "main": "./dist/main/index.js",
     "module": "./dist/module/index.js",
     "types": "./dist/module/index.d.ts",
