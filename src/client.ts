@@ -7,6 +7,7 @@ import { httpResponseToAPIError } from './errors';
 import { MatchResource } from './resources/matches';
 import { parseDates } from './time';
 import { APIError } from './types/errors';
+import { UsersResource } from './resources/users';
 
 export type APIClientConfig = {
     baseURL?: string;
@@ -27,6 +28,7 @@ export class MatchDayClient {
     public readonly seasons = new SeasonsResource(this);
     public readonly persons = new PersonsResource(this);
     public readonly search = new SearchResource(this);
+    public readonly users = new UsersResource(this);
 
     constructor(config: APIClientConfig) {
         this.config = {
