@@ -11,6 +11,18 @@ export class TeamsResource extends APIResource {
         super(client, '/teams');
     }
 
+    /**
+     * Retrieves a paginated list of teams.
+     *
+     * Builds a query string from the provided {@link BaseListQuery} options
+     * and fetches an array of {@link TeamPartial} objects from the API.
+     *
+     * @async
+     * @function
+     * @param {BaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     *
+     * @throws {APIError} If the request fails or the server responds with an error.
+     */
     async list(query: BaseListQuery) {
         const queryString = qs.stringify(query);
 
@@ -19,6 +31,18 @@ export class TeamsResource extends APIResource {
         });
     }
 
+    /**
+     * Retrieves detailed information about a specific team.
+     *
+     * Makes a `GET` request to fetch the full {@link Team} resource
+     * by its unique identifier.
+     *
+     * @async
+     * @function
+     * @param id - The unique identifier of the team.
+     *
+     * @throws {APIError} If the request fails, the team is not found, or the server responds with an error.
+     */
     async get(id: string) {
         return this.client.makeRequest<Team>(this.basePath + '/' + id, { method: 'GET' });
     }
