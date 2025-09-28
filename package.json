@@ -1,19 +1,19 @@
 {
     "name": "@thewfa/api-client",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "Powerchair football API client",
     "license": "MIT",
     "author": "",
     "type": "module",
-    "main": "./dist/main/index.js",
-    "module": "./dist/module/index.js",
-    "types": "./dist/module/index.d.ts",
+    "main": "./dist/main/index.cjs",
+    "module": "./dist/module/index.mjs",
+    "types": "./dist/types/index.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/module/index.d.ts",
-            "import": "./dist/module/index.js",
-            "require": "./dist/main/index.js",
-            "default": "./dist/module/index.js"
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/module/index.mjs",
+            "require": "./dist/main/index.cjs",
+            "default": "./dist/module/index.mjs"
         }
     },
     "repository": {
@@ -49,9 +49,10 @@
         "README.md"
     ],
     "scripts": {
+        "build:esm": "esbuild src/index.ts --bundle --format=esm --outdir=dist/module --out-extension:.js=.mjs",
+        "build:cjs": "esbuild src/index.ts --bundle --format=cjs --outdir=dist/main  --out-extension:.js=.cjs",
+        "build:types": "tsc -p tsconfig.types.json",
         "build": "run-p build:*",
-        "build:main": "tsc -p tsconfig.json",
-        "build:module": "tsc -p tsconfig.module.json",
         "clean": "rimraf dist",
         "prepublishOnly": "npm run build",
         "lint": "eslint src --ext .ts",
@@ -69,6 +70,7 @@
         "@typescript-eslint/eslint-plugin": "^8.43.0",
         "@typescript-eslint/parser": "^8.43.0",
         "dotenv": "^17.2.2",
+        "esbuild": "^0.25.10",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-eslint-comments": "^3.2.0",
