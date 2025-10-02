@@ -3,7 +3,7 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types/api';
 import {
-    Team,
+    MatchDayTeam,
     MatchDayTeamPartial,
     MatchDayTeamStaffRegistration,
     MatchDayTeamPlayerRegistration,
@@ -49,7 +49,7 @@ export class TeamsResource extends APIResource {
      * @throws {MatchDayAPIError} If the request fails, the team is not found, or the server responds with an error.
      */
     async get(id: string) {
-        return this.client.makeRequest<Team>(this.basePath + '/' + id, { method: 'GET' });
+        return this.client.makeRequest<MatchDayTeam>(this.basePath + '/' + id, { method: 'GET' });
     }
 
     /**
