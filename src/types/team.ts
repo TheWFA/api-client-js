@@ -17,7 +17,7 @@ export type MatchDayTeamHistory = {
     secondary?: string;
 };
 
-export type Team = MatchDayTeamPartial & {
+export type MatchDayTeam = MatchDayTeamPartial & {
     primary: string;
     secondary: string;
     parentClub?: MatchDayClubPartial;

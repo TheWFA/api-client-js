@@ -1,7 +1,7 @@
 export type MatchDayCourt = {
     id: string;
     name: string;
-    location: Location;
+    location: MatchDayLocation;
 };
 
 export type MatchDayLocation = {
