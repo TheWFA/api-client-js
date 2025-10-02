@@ -1,45 +1,47 @@
-import { MatchStatus } from './match';
-import { PersonPartial } from './person';
+import { MatchDayMatchStatus } from './match';
+import { MatchDayPersonPartial } from './person';
 
-export enum MatchEventType {
+export enum MatchDayMatchEventType {
     Goal = 'goal',
     YellowCard = 'yellow_card',
     RedCard = 'red_card',
     Substitution = 'substitution',
 }
 
-export enum GoalType {
+export enum MatchDayGoalType {
     Goal = 'goal',
     OwnGoal = 'own-goal',
 }
 
-export type BaseMatchEvent = {
-    type: MatchEventType;
+export type MatchDayBaseMatchEvent = {
+    type: MatchDayMatchEventType;
     createdAt: Date;
     time?: number | null;
-    matchPeriod?: MatchStatus | null;
+    matchPeriod?: MatchDayMatchStatus | null;
 };
 
-export type GoalMatchEvent = {
-    player: PersonPartial;
+export type MatchDayGoalMatchEvent = {
+    player: MatchDayPersonPartial;
     teamId: string;
     penalty: boolean;
-    goaltype: GoalType;
+    goaltype: MatchDayGoalType;
 };
 
-export type CardMatchEvent = {
-    player: PersonPartial;
+export type MatchDayCardMatchEvent = {
+    player: MatchDayPersonPartial;
     teamId: string;
 };
 
-export type SubstitutionMatchEvent = {
-    playerOn: PersonPartial;
-    playerOff: PersonPartial;
+export type MatchDaySubstitutionMatchEvent = {
+    playerOn: MatchDayPersonPartial;
+    playerOff: MatchDayPersonPartial;
     teamId: string;
 };
 
-export type MatchEvent =
-    | ({ type: MatchEventType.Goal } & BaseMatchEvent & GoalMatchEvent)
-    | ({ type: MatchEventType.RedCard } & BaseMatchEvent & CardMatchEvent)
-    | ({ type: MatchEventType.YellowCard } & BaseMatchEvent & CardMatchEvent)
-    | ({ type: MatchEventType.Substitution } & BaseMatchEvent & SubstitutionMatchEvent);
+export type MatchDayMatchEvent =
+    | ({ type: MatchDayMatchEventType.Goal } & MatchDayBaseMatchEvent & MatchDayGoalMatchEvent)
+    | ({ type: MatchDayMatchEventType.RedCard } & MatchDayBaseMatchEvent & MatchDayCardMatchEvent)
+    | ({ type: MatchDayMatchEventType.YellowCard } & MatchDayBaseMatchEvent &
+          MatchDayCardMatchEvent)
+    | ({ type: MatchDayMatchEventType.Substitution } & MatchDayBaseMatchEvent &
+          MatchDaySubstitutionMatchEvent);

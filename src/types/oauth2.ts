@@ -1,10 +1,10 @@
-export type OAuth2Scope = {
+export type MatchDayOAuth2Scope = {
     id: string;
     name: string;
     description: string;
 };
 
-export type OAuth2ScopeId = keyof typeof SCOPES;
+export type MatchDayOAuth2ScopeId = keyof typeof SCOPES;
 
 export const SCOPES = {
     email: {
@@ -22,4 +22,4 @@ export const SCOPES = {
         name: 'Read your team staff associations',
         description: 'Access to who you coach, manage or assist and any previous teams',
     },
-} as const satisfies Record<string, OAuth2Scope>;
+} as const satisfies Record<string, MatchDayOAuth2Scope>;

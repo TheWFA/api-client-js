@@ -1,7 +1,7 @@
-import { BaseListQuery } from './api';
-import { MatchStatus } from './match';
+import { MatchDayBaseListQuery } from './api';
+import { MatchDayMatchStatus } from './match';
 
-export type MatchQuery = {
+export type MatchDayMatchQuery = {
     /** Sort order (defaults to { date: "asc" }) */
     orderBy?: {
         date: 'asc' | 'desc';
@@ -30,5 +30,5 @@ export type MatchQuery = {
     court?: string[];
 
     /** Matches with any of these statuses */
-    status?: MatchStatus[];
-} & BaseListQuery;
+    status?: MatchDayMatchStatus[];
+} & MatchDayBaseListQuery;

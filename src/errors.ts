@@ -1,13 +1,15 @@
 import {
-    APIError,
-    BadRequestBody,
-    BadRequestError,
-    BaseErrorBody,
-    NotFoundError,
-    UnauthorizedError,
+    MatchDayAPIError,
+    MatchDayBadRequestBody,
+    MatchDayBadRequestError,
+    MatchDayBaseErrorBody,
+    MatchDayNotFoundError,
+    MatchDayUnauthorizedError,
+    MatchDayExceededRateLimitError,
+    MatchDayForbiddenError,
 } from './types/errors';
 
-export async function httpResponseToAPIError(res: Response): Promise<APIError | undefined> {
+export async function httpResponseToAPIError(res: Response): Promise<MatchDayAPIError | undefined> {
     try {
         if (res.ok) {
             return;
@@ -15,9 +17,9 @@ export async function httpResponseToAPIError(res: Response): Promise<APIError | 
 
         switch (res.status) {
             case 400: {
-                const json: BadRequestBody = await res.json();
+                const json: MatchDayBadRequestBody = await res.json();
 
-                const er = new BadRequestError(json.message);
+                const er = new MatchDayBadRequestError(json.message);
 
                 if (json.errors) {
                     er.validationIssues = json.errors;
@@ -27,28 +29,34 @@ export async function httpResponseToAPIError(res: Response): Promise<APIError | 
             }
 
             case 401: {
-                const json: BaseErrorBody = await res.json();
+                const json: MatchDayBaseErrorBody = await res.json();
 
-                return new UnauthorizedError(json.message);
+                return new MatchDayUnauthorizedError(json.message);
             }
 
             case 403: {
-                const json: BaseErrorBody = await res.json();
+                const json: MatchDayBaseErrorBody = await res.json();
 
-                return new UnauthorizedError(json.message);
+                return new MatchDayForbiddenError(json.message);
             }
 
             case 404: {
-                const json: BaseErrorBody = await res.json();
+                const json: MatchDayBaseErrorBody = await res.json();
 
-                return new NotFoundError(json.message);
+                return new MatchDayNotFoundError(json.message);
+            }
+
+            case 429: {
+                const json: MatchDayBaseErrorBody = await res.json();
+
+                return new MatchDayExceededRateLimitError(json.message);
             }
 
             default: {
-                return new APIError('An unknown error occurred');
+                return new MatchDayAPIError('An unknown error occurred');
             }
         }
     } catch {
-        return new APIError('Failed to parse error');
+        return new MatchDayAPIError('Failed to parse error');
     }
 }

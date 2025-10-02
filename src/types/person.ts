@@ -1,30 +1,30 @@
-import { CompetitionPartial } from './competitions';
-import { SeasonPartial } from './season';
-import { TeamPartial } from './team';
+import { MatchDayCompetitionPartial } from './competitions';
+import { MatchDaySeasonPartial } from './season';
+import { MatchDayTeamPartial } from './team';
 
-export type PersonPartial = {
+export type MatchDayPersonPartial = {
     id: string;
     firstName: string;
     lastName: string;
     knownAs: string;
 };
 
-export type PlayerRegistration = {
-    team: TeamPartial;
-    competition: CompetitionPartial;
-    season: SeasonPartial;
+export type MatchDayPlayerRegistration = {
+    team: MatchDayTeamPartial;
+    competition: MatchDayCompetitionPartial;
+    season: MatchDaySeasonPartial;
     registeredAt: Date;
     number: number;
 };
 
-export type CoachRegistration = {
-    team: TeamPartial;
-    competition: CompetitionPartial;
-    season: SeasonPartial;
+export type MatchDayCoachRegistration = {
+    team: MatchDayTeamPartial;
+    competition: MatchDayCompetitionPartial;
+    season: MatchDaySeasonPartial;
     registeredAt: Date;
 };
 
-export type Person = {
-    playerRegistrations: PlayerRegistration[];
-    coachRegistrations: CoachRegistration[];
-} & PersonPartial;
+export type MatchDayPerson = {
+    playerRegistrations: MatchDayPlayerRegistration[];
+    coachRegistrations: MatchDayCoachRegistration[];
+} & MatchDayPersonPartial;

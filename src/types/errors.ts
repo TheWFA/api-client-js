@@ -4,10 +4,10 @@ export type ValidationIssue = {
     code: string;
 };
 
-export type BaseErrorBody = { message: string };
-export type BadRequestBody = BaseErrorBody & { errors?: ValidationIssue[] };
+export type MatchDayBaseErrorBody = { message: string };
+export type MatchDayBadRequestBody = MatchDayBaseErrorBody & { errors?: ValidationIssue[] };
 
-export class APIError extends Error {
+export class MatchDayAPIError extends Error {
     public status: number;
     public jsonResponse: { message: string };
 
@@ -23,9 +23,9 @@ export class APIError extends Error {
     }
 }
 
-export class BadRequestError extends APIError {
+export class MatchDayBadRequestError extends MatchDayAPIError {
     public validationIssues?: ValidationIssue[];
-    public jsonResponse: BadRequestBody;
+    public jsonResponse: MatchDayBadRequestBody;
 
     constructor(message = 'Bad Request', validationIssues?: ValidationIssue[]) {
         super(message, 400);
@@ -36,20 +36,26 @@ export class BadRequestError extends APIError {
     }
 }
 
-export class UnauthorizedError extends APIError {
+export class MatchDayUnauthorizedError extends MatchDayAPIError {
     constructor(message = 'Unauthorized') {
         super(message, 401);
     }
 }
 
-export class ForbiddenError extends APIError {
+export class MatchDayForbiddenError extends MatchDayAPIError {
     constructor(message = 'Forbidden') {
         super(message, 403);
     }
 }
 
-export class NotFoundError extends APIError {
+export class MatchDayNotFoundError extends MatchDayAPIError {
     constructor(message = 'Not Found') {
         super(message, 404);
+    }
+}
+
+export class MatchDayExceededRateLimitError extends MatchDayAPIError {
+    constructor(message = 'You have exceeded the API rate limit') {
+        super(message, 429);
     }
 }

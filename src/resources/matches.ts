@@ -1,8 +1,8 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { FullMatch, Match } from '../types/match';
-import { MatchQuery } from '../types/match-query';
+import { MatchDayFullMatch, MatchDayMatch } from '../types/match';
+import { MatchDayMatchQuery } from '../types/match-query';
 
 import { APIResource } from './resource';
 
@@ -28,10 +28,10 @@ export class MatchResource extends APIResource {
      * const matches = await client.matches.list({ season: "2025", limit: 10 });
      * console.log(matches[0].id);
      */
-    async list(query: MatchQuery) {
+    async list(query: MatchDayMatchQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<Match[]>(this.basePath + '?' + queryString, {
+        return this.client.makeRequest<MatchDayMatch[]>(this.basePath + '?' + queryString, {
             method: 'GET',
         });
     }
@@ -54,6 +54,8 @@ export class MatchResource extends APIResource {
      * console.log(match.homeTeam.name, match.awayTeam.name);
      */
     async get(id: string) {
-        return this.client.makeRequest<FullMatch>(this.basePath + '/' + id, { method: 'GET' });
+        return this.client.makeRequest<MatchDayFullMatch>(this.basePath + '/' + id, {
+            method: 'GET',
+        });
     }
 }

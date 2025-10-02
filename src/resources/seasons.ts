@@ -1,8 +1,8 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { BaseListQuery } from '../types/api';
-import { SeasonPartial } from '../types/season';
+import { MatchDayBaseListQuery } from '../types/api';
+import { MatchDaySeasonPartial } from '../types/season';
 
 import { APIResource } from './resource';
 
@@ -24,10 +24,10 @@ export class SeasonsResource extends APIResource {
      *
      * @throws {APIError} If the request fails or the server responds with an error.
      */
-    async list(query: BaseListQuery) {
+    async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<SeasonPartial[]>(this.basePath + '?' + queryString, {
+        return this.client.makeRequest<MatchDaySeasonPartial[]>(this.basePath + '?' + queryString, {
             method: 'GET',
         });
     }

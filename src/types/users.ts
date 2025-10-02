@@ -1,6 +1,6 @@
-import { Person } from './person';
+import { MatchDayPerson } from './person';
 
-export type UserPartial = {
+export type MatchDayUserPartial = {
     id: string;
     name: string;
     email: string;
@@ -8,9 +8,9 @@ export type UserPartial = {
     createdAt: Date;
 };
 
-export type User = {
+export type MatchDayUser = {
     banned: boolean;
     role: string;
     permissions: Record<string, boolean>;
-    persons: Person[];
-} & UserPartial;
+    persons: MatchDayPerson[];
+} & MatchDayUserPartial;

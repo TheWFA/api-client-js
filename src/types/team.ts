@@ -1,14 +1,14 @@
-import { CompetitionPartial } from './competitions';
-import { PersonPartial } from './person';
+import { MatchDayCompetitionPartial } from './competitions';
+import { MatchDayPersonPartial } from './person';
 
-export type TeamPartial = {
+export type MatchDayTeamPartial = {
     id: string;
     name: string;
     logo: string;
     nickname: string;
 };
 
-export type TeamHistory = {
+export type MatchDayTeamHistory = {
     name?: string;
     logo?: string;
     nickname?: string;
@@ -17,33 +17,33 @@ export type TeamHistory = {
     secondary?: string;
 };
 
-export type Team = TeamPartial & {
+export type Team = MatchDayTeamPartial & {
     primary: string;
     secondary: string;
-    parentClub?: ClubPartial;
+    parentClub?: MatchDayClubPartial;
 };
 
-export type ClubPartial = {
+export type MatchDayClubPartial = {
     id: string;
     name: string;
     logo: string;
 };
 
-export type ClubHistory = {
+export type MatchDayClubHistory = {
     name?: string;
     contactEmail?: string;
     clubLogo?: string;
     createdAt: Date;
 };
 
-export type Club = ClubPartial & {
+export type Club = MatchDayClubPartial & {
     contactEmail: string;
-    history: ClubHistory[];
+    history: MatchDayClubHistory[];
 };
 
 export type TeamPlayerRegistration = {
-    player: PersonPartial;
-    competition: CompetitionPartial;
+    player: MatchDayPersonPartial;
+    competition: MatchDayCompetitionPartial;
     registeredAt: Date;
     number: number;
 };

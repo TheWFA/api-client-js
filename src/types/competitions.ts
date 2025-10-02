@@ -1,28 +1,28 @@
-import { SeasonPartial } from './season';
-import { TeamPartial } from './team';
+import { MatchDaySeasonPartial } from './season';
+import { MatchDayTeamPartial } from './team';
 
-export enum CompetitionType {
+export enum MatchDayCompetitionType {
     League = 'league',
     Cup = 'cup',
     Friendly = 'friendly',
 }
 
-export type CompetitionPartial = {
+export type MatchDayCompetitionPartial = {
     id: string;
     name: string;
-    type: CompetitionType;
-    activeSeason: SeasonPartial;
+    type: MatchDayCompetitionType;
+    activeSeason: MatchDaySeasonPartial;
     logo?: string;
 };
 
-export type Competition = {
-    seasons: SeasonPartial[];
+export type MatchDayCompetition = {
+    seasons: MatchDaySeasonPartial[];
     activeSeasonId: string;
     previousNames: { name: string; created_at: Date };
-} & Omit<CompetitionPartial, 'activeSeason'>;
+} & Omit<MatchDayCompetitionPartial, 'activeSeason'>;
 
-export type CompetitionTableRow = {
-    team: TeamPartial;
+export type MatchDayCompetitionTableRow = {
+    team: MatchDayTeamPartial;
     position: number;
     matchesPlayed: number;
     won: number;

@@ -1,8 +1,8 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { BaseListQuery } from '../types/api';
-import { SearchItem } from '../types/search';
+import { MatchDayBaseListQuery } from '../types/api';
+import { MatchDaySearchItem } from '../types/search';
 
 import { APIResource } from './resource';
 
@@ -20,8 +20,8 @@ export class SearchResource extends APIResource {
      *
      * @async
      * @function
-     * @param {BaseListQuery} query - Query parameters such as search text, pagination, filters, or sorting.
-     * @returns {Promise<SearchItem[]>} A promise that resolves to an array of search results.
+     * @param {MatchDayBaseListQuery} query - Query parameters such as search text, pagination, filters, or sorting.
+     * @returns {Promise<MatchDaySearchItem[]>} A promise that resolves to an array of search results.
      *
      * @throws {APIError} If the request fails or the server responds with an error.
      *
@@ -30,10 +30,10 @@ export class SearchResource extends APIResource {
      * const results = await client.search.list({ q: "United", limit: 10 });
      * console.log(results);
      */
-    async list(query: BaseListQuery): Promise<SearchItem[]> {
+    async list(query: MatchDayBaseListQuery): Promise<MatchDaySearchItem[]> {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<SearchItem[]>(this.basePath + '?' + queryString, {
+        return this.client.makeRequest<MatchDaySearchItem[]>(this.basePath + '?' + queryString, {
             method: 'GET',
         });
     }

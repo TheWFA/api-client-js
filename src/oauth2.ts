@@ -1,18 +1,15 @@
-import { APIError } from './types/errors';
-import { OAuth2ScopeId } from './types/oauth2';
+import { MatchDayAPIError } from './types/errors';
+import { MatchDayOAuth2ScopeId } from './types/oauth2';
 
-export type OAuthClientConfig = {
+export type MatchDayOAuthClientConfig = {
     clientId: string;
-    clientSecret?: string; // Omit for public clients (PKCE required)
+    clientSecret?: string;
     authURL?: string;
-
-    // Optional: force PKCE even for confidential clients
     usePKCE?: boolean;
-    // Optional: PKCE method (default S256)
     pkceMethod?: 'S256' | 'plain';
 };
 
-export type AccessTokenReturn = {
+export type MatchDayAccessTokenReturn = {
     access_token: string;
     token_type: string;
     expires_in: number;
@@ -24,15 +21,15 @@ export type AuthorizeReturn = {
     pkceVerifier?: string;
 };
 
-const defaultConfig: Partial<OAuthClientConfig> = {
+const defaultConfig: Partial<MatchDayOAuthClientConfig> = {
     authURL: 'https://auth.thewfa.org.uk',
     pkceMethod: 'S256',
 };
 
 export class MatchDayOAuthClient {
-    private config: OAuthClientConfig;
+    private config: MatchDayOAuthClientConfig;
 
-    constructor(config: OAuthClientConfig) {
+    constructor(config: MatchDayOAuthClientConfig) {
         this.config = { ...defaultConfig, ...config };
     }
 
@@ -47,7 +44,7 @@ export class MatchDayOAuthClient {
      * @returns Fully constructed authorization URL.
      */
     async authorize(
-        scopes: OAuth2ScopeId[],
+        scopes: MatchDayOAuth2ScopeId[],
         redirectURL: string,
         state?: string,
     ): Promise<AuthorizeReturn> {
@@ -59,15 +56,13 @@ export class MatchDayOAuthClient {
         base.searchParams.set('redirect_uri', redirectURL);
         if (state) base.searchParams.set('state', state);
 
-        // Decide whether to use PKCE
-        const mustUsePkce = !this.config.clientSecret; // public client
+        const mustUsePkce = !this.config.clientSecret;
         const shouldUsePkce = mustUsePkce || !!this.config.usePKCE;
 
         let pkceVerifier = undefined;
 
         if (shouldUsePkce) {
             const method = this.config.pkceMethod ?? 'S256';
-            // Generate/stash a verifier for the upcoming token exchange
             pkceVerifier = generateCodeVerifier();
             const challenge =
                 method === 'S256' ? await toCodeChallengeS256(pkceVerifier) : pkceVerifier;
@@ -90,24 +85,21 @@ export class MatchDayOAuthClient {
         code: string,
         redirectURL: string,
         pkceVerifier?: string,
-    ): Promise<AccessTokenReturn> {
+    ): Promise<MatchDayAccessTokenReturn> {
         if (!this.config.clientId) {
-            throw new APIError('A client id is required to exchange code');
+            throw new MatchDayAPIError('A client id is required to exchange code');
         }
 
-        // Build form body (application/x-www-form-urlencoded)
         const body = new URLSearchParams();
         body.set('grant_type', 'authorization_code');
         body.set('code', code);
         body.set('redirect_uri', redirectURL);
         body.set('client_id', this.config.clientId);
 
-        // Confidential clients: include client_secret unless you use HTTP Basic
         if (this.config.clientSecret) {
             body.set('client_secret', this.config.clientSecret);
         }
 
-        // If PKCE was used in authorize(), include the verifier
         if (pkceVerifier) {
             body.set('code_verifier', pkceVerifier);
         }
@@ -122,7 +114,6 @@ export class MatchDayOAuthClient {
         });
 
         if (!res.ok) {
-            // Try to surface provider error details
             let detail = '';
             try {
                 const e = await res.json();
@@ -130,24 +121,21 @@ export class MatchDayOAuthClient {
             } catch {
                 detail = await res.text();
             }
-            throw new APIError(
+            throw new MatchDayAPIError(
                 `Token exchange failed: ${res.status} ${res.statusText}${detail ? ` - ${detail}` : ''}`,
             );
         }
 
-        const json = (await res.json()) as AccessTokenReturn;
+        const json = (await res.json()) as MatchDayAccessTokenReturn;
 
         if (!json?.access_token) {
-            throw new APIError('Token exchange succeeded but no access_token was returned');
+            throw new MatchDayAPIError('Token exchange succeeded but no access_token was returned');
         }
 
         return json;
     }
 }
 
-/* -------------------- PKCE utilities -------------------- */
-
-// RFC 7636: 43..128 chars, unreserved URL chars
 function generateCodeVerifier(length = 64): string {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     const bytes = new Uint8Array(length);
@@ -155,14 +143,12 @@ function generateCodeVerifier(length = 64): string {
     return Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('');
 }
 
-// Compute S256 code challenge
 async function toCodeChallengeS256(verifier: string): Promise<string> {
     const enc = new TextEncoder().encode(verifier);
     const digest = await crypto.subtle.digest('SHA-256', enc);
     return base64UrlEncode(new Uint8Array(digest));
 }
 
-// Browser-safe base64url
 function base64UrlEncode(bytes: Uint8Array): string {
     let binary = '';
     for (let i = 0; i < bytes.byteLength; i++) {

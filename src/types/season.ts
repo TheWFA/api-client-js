@@ -1,4 +1,4 @@
-export type SeasonPartial = {
+export type MatchDaySeasonPartial = {
     id: string;
     name: string;
     startDate: Date;

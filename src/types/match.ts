@@ -1,10 +1,10 @@
-import { Court } from './locations';
-import { MatchEvent } from './match-events';
-import { PersonPartial } from './person';
-import { SeasonPartial } from './season';
-import { TeamPartial } from './team';
+import { MatchDayCourt } from './locations';
+import { MatchDayMatchEvent } from './match-events';
+import { MatchDayPersonPartial } from './person';
+import { MatchDaySeasonPartial } from './season';
+import { MatchDayTeamPartial } from './team';
 
-export enum MatchStatus {
+export enum MatchDayMatchStatus {
     Scheduled = 'scheduled',
     FirstHalf = 'first-half',
     HalfTime = 'half-time',
@@ -19,55 +19,55 @@ export enum MatchStatus {
     Penalties = 'penalty-shootout',
 }
 
-export enum MatchType {
+export enum MatchDayMatchType {
     League = 'league',
     Knockout = 'knockout',
 }
 
-export type MatchTimes = {
+export type MatchDayMatchTimes = {
     firstHalfStartedAt: Date;
     secondHalfStartedAt: Date;
     firstHalfExtraTimeStartedAt: Date;
     secondHalfExtraTimeStartedAt: Date;
 };
 
-export type MatchOfficials = {
-    referee?: PersonPartial;
-    assistant1?: PersonPartial;
-    assistant2?: PersonPartial;
-    fourthOfficial?: PersonPartial;
+export type MatchDayMatchOfficials = {
+    referee?: MatchDayPersonPartial;
+    assistant1?: MatchDayPersonPartial;
+    assistant2?: MatchDayPersonPartial;
+    fourthOfficial?: MatchDayPersonPartial;
 };
 
-export type MatchGroup = {
+export type MatchDayMatchGroup = {
     id: string;
     competition: string;
     name: string;
 };
 
-export type Match = {
+export type MatchDayMatch = {
     id: string;
-    homeTeam: TeamPartial;
-    awayTeam: TeamPartial;
+    homeTeam: MatchDayTeamPartial;
+    awayTeam: MatchDayTeamPartial;
     homeScore: number;
     awayScore: number;
     homeScorePenalty: number;
     awayScorePenalty: number;
-    status: MatchStatus;
+    status: MatchDayMatchStatus;
     scheduledFor: Date;
-    times: MatchTimes;
+    times: MatchDayMatchTimes;
     competition: {
         id: string;
         name: string;
         logo?: string;
     };
-    season: SeasonPartial;
-    court?: Court;
-    group?: MatchGroup;
-    officials: MatchOfficials;
+    season: MatchDaySeasonPartial;
+    court?: MatchDayCourt;
+    group?: MatchDayMatchGroup;
+    officials: MatchDayMatchOfficials;
     streamLink?: string;
 };
 
-export enum PlayerPostition {
+export enum MatchDayPlayerPostition {
     Left = 'left',
     Right = 'right',
     Centre = 'centre',
@@ -76,15 +76,15 @@ export enum PlayerPostition {
 }
 
 export type MatchPlayer = {
-    person: PersonPartial;
+    person: MatchDayPersonPartial;
     number: number;
-    position: PlayerPostition | null;
+    position: MatchDayPlayerPostition | null;
     captain: boolean;
 };
 
-export type FullMatch = {
-    details: Match;
+export type MatchDayFullMatch = {
+    details: MatchDayMatch;
     homeLineups: MatchPlayer[];
     awayLineups: MatchPlayer[];
-    events: MatchEvent[];
+    events: MatchDayMatchEvent[];
 };

@@ -1,8 +1,8 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { BaseListQuery } from '../types/api';
-import { Team, TeamPartial } from '../types/team';
+import { MatchDayBaseListQuery } from '../types/api';
+import { Team, MatchDayTeamPartial } from '../types/team';
 
 import { APIResource } from './resource';
 
@@ -21,12 +21,12 @@ export class TeamsResource extends APIResource {
      * @function
      * @param {BaseListQuery} query - Query parameters such as pagination, filters, or sorting.
      *
-     * @throws {APIError} If the request fails or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
      */
-    async list(query: BaseListQuery) {
+    async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<TeamPartial[]>(this.basePath + '?' + queryString, {
+        return this.client.makeRequest<MatchDayTeamPartial[]>(this.basePath + '?' + queryString, {
             method: 'GET',
         });
     }
@@ -41,7 +41,7 @@ export class TeamsResource extends APIResource {
      * @function
      * @param id - The unique identifier of the team.
      *
-     * @throws {APIError} If the request fails, the team is not found, or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails, the team is not found, or the server responds with an error.
      */
     async get(id: string) {
         return this.client.makeRequest<Team>(this.basePath + '/' + id, { method: 'GET' });

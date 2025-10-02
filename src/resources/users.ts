@@ -1,5 +1,5 @@
 import { MatchDayClient } from '../client';
-import { User } from '../types/users';
+import { MatchDayUser } from '../types/users';
 
 import { APIResource } from './resource';
 
@@ -21,8 +21,8 @@ export class UsersResource extends APIResource {
      *
      * @throws {APIError} If the request fails or the server responds with an error.
      */
-    async me(): Promise<User> {
-        return this.client.makeRequest<User>(this.basePath + '/@me', {
+    async me(): Promise<MatchDayUser> {
+        return this.client.makeRequest<MatchDayUser>(this.basePath + '/@me', {
             method: 'GET',
         });
     }

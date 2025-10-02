@@ -6,7 +6,7 @@ import { SearchResource } from './resources/search';
 import { httpResponseToAPIError } from './errors';
 import { MatchResource } from './resources/matches';
 import { parseDates } from './time';
-import { APIError } from './types/errors';
+import { MatchDayAPIError } from './types/errors';
 import { UsersResource } from './resources/users';
 
 export type APIClientConfig = {
@@ -47,7 +47,7 @@ export class MatchDayClient {
         };
 
         if (!this.config.accessToken && !this.config.apiKey) {
-            throw new APIError('No authentication method set');
+            throw new MatchDayAPIError('No authentication method set');
         }
 
         if (this.config.apiKey) {

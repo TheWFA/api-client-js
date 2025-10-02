@@ -1,12 +1,12 @@
-export enum SearchItemType {
+export enum MatchDaySearchItemType {
     Team = 'team',
     Person = 'person',
     Competition = 'competition',
     Match = 'match',
 }
 
-export type SearchItem = {
-    type: SearchItemType;
+export type MatchDaySearchItem = {
+    type: MatchDaySearchItemType;
     id: string;
     label: string;
     description: string;
