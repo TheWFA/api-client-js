@@ -1,4 +1,4 @@
-import { OAuth2ScopeId } from '../types/oauth2';
+import { MatchDayOAuth2ScopeId } from '../types/oauth2';
 
 import { getTestOAuthClient } from './client';
 
@@ -7,7 +7,7 @@ test('creates a valid authorization url', async () => {
 
     const state = crypto.randomUUID();
     const redirectUri = 'http://localhost:3000';
-    const scopes: OAuth2ScopeId[] = ['email'];
+    const scopes: MatchDayOAuth2ScopeId[] = ['email'];
 
     const { url } = await client.authorize(scopes, redirectUri, state);
 
