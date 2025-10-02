@@ -1,5 +1,8 @@
+import qs from 'qs';
+
 import { MatchDayClient } from '../client';
-import { MatchDayPerson } from '../types/person';
+import { MatchDayBaseListQuery } from '../types';
+import { MatchDayPerson, MatchDayPersonPartial } from '../types/person';
 
 import { APIResource } from './resource';
 
@@ -27,5 +30,30 @@ export class PersonsResource extends APIResource {
      */
     async get(id: string) {
         return this.client.makeRequest<MatchDayPerson>(this.basePath + '/' + id, { method: 'GET' });
+    }
+
+    /**
+     * Retrieves a list of people.
+     *
+     * Makes a `GET` request to fetch an array of {@link MatchDayPersonPartial} resources
+     * based on the provided query parameters.
+     *
+     * @async
+     * @function
+     * @param {MatchDayBaseListQuery} query - The filtering and pagination options for the request.
+     * @returns  A promise that resolves to an array of partial person objects.
+     *
+     * @throws {MatchDayAPIError} If the request fails, the query is invalid, or the server responds with an error.
+     *
+     * @example
+     * const people = await client.people.list({ limit: 20 });
+     * console.log(people[0].id, people[0].name);
+     */
+    async list(query: MatchDayBaseListQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<MatchDayPersonPartial[]>(this.basePath + '?' + queryString, {
+            method: 'GET',
+        });
     }
 }

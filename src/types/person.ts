@@ -1,6 +1,6 @@
 import { MatchDayCompetitionPartial } from './competitions';
 import { MatchDaySeasonPartial } from './season';
-import { MatchDayTeamPartial } from './team';
+import { MatchDayTeamPartial, MatchDayTeamStaffRole } from './team';
 
 export type MatchDayPersonPartial = {
     id: string;
@@ -17,14 +17,15 @@ export type MatchDayPlayerRegistration = {
     number: number;
 };
 
-export type MatchDayCoachRegistration = {
+export type MatchDayPersonStaffRegistration = {
     team: MatchDayTeamPartial;
     competition: MatchDayCompetitionPartial;
     season: MatchDaySeasonPartial;
+    role: MatchDayTeamStaffRole;
     registeredAt: Date;
 };
 
 export type MatchDayPerson = {
     playerRegistrations: MatchDayPlayerRegistration[];
-    coachRegistrations: MatchDayCoachRegistration[];
+    coachRegistrations: MatchDayPersonStaffRegistration[];
 } & MatchDayPersonPartial;

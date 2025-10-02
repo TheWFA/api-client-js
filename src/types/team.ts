@@ -41,9 +41,23 @@ export type Club = MatchDayClubPartial & {
     history: MatchDayClubHistory[];
 };
 
-export type TeamPlayerRegistration = {
+export type MatchDayTeamPlayerRegistration = {
     player: MatchDayPersonPartial;
     competition: MatchDayCompetitionPartial;
     registeredAt: Date;
     number: number;
+};
+
+export enum MatchDayTeamStaffRole {
+    HeadCoach = 'head-coach',
+    AssistantCoach = 'assistant-coach',
+    Mechanic = 'mechanic',
+    Assistant = 'assistant',
+}
+
+export type MatchDayTeamStaffRegistration = {
+    person: MatchDayPersonPartial;
+    competition: MatchDayCompetitionPartial;
+    registeredAt: Date;
+    role: MatchDayTeamStaffRole | null;
 };
