@@ -27,5 +27,5 @@ export type MatchDayPersonStaffRegistration = {
 
 export type MatchDayPerson = {
     playerRegistrations: MatchDayPlayerRegistration[];
-    coachRegistrations: MatchDayPersonStaffRegistration[];
+    staffRegistrations: MatchDayPersonStaffRegistration[];
 } & MatchDayPersonPartial;
