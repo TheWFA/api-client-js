@@ -3,9 +3,9 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayFullMatch, MatchDayMatch } from '../types/match';
 import { MatchDayMatchQuery } from '../types/match-query';
+import { MatchReport, MatchSheetReturn } from '../types';
 
 import { APIResource } from './resource';
-import { MatchReport, MatchSheetReturn } from '../types';
 
 export class MatchResource extends APIResource {
     constructor(client: MatchDayClient) {
