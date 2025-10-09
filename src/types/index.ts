@@ -11,3 +11,4 @@ export * from './search';
 export * from './season';
 export * from './team';
 export * from './users';
+export * from './match-report';

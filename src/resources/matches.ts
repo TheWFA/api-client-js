@@ -5,6 +5,7 @@ import { MatchDayFullMatch, MatchDayMatch } from '../types/match';
 import { MatchDayMatchQuery } from '../types/match-query';
 
 import { APIResource } from './resource';
+import { MatchReport, MatchSheetReturn } from '../types';
 
 export class MatchResource extends APIResource {
     constructor(client: MatchDayClient) {
@@ -55,6 +56,52 @@ export class MatchResource extends APIResource {
      */
     async get(id: string) {
         return this.client.makeRequest<MatchDayFullMatch>(this.basePath + '/' + id, {
+            method: 'GET',
+        });
+    }
+
+    /**
+     * Retrieves the full match report for a specific match.
+     *
+     * Makes a `GET` request to fetch the {@link MatchReport} resource
+     * identified by the given match ID.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the match.
+     * @returns {Promise<MatchReport>} A promise that resolves to the full match report.
+     *
+     * @throws {MatchDayAPIError} If the request fails, the match is not found, or the server responds with an error.
+     *
+     * @example
+     * const report = await client.matches.matchReport("match123");
+     * console.log(report);
+     */
+    async matchReport(id: string) {
+        return this.client.makeRequest<MatchReport>(this.basePath + '/report' + id, {
+            method: 'GET',
+        });
+    }
+
+    /**
+     * Retrieves the official match sheet for a specific match.
+     *
+     * Makes a `GET` request to fetch the {@link MatchSheetReturn} resource
+     * identified by the given match ID.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the match.
+     * @returns {Promise<MatchSheetReturn>} A promise that resolves to the match sheet data.
+     *
+     * @throws {MatchDayAPIError} If the request fails, the match is not found, or the server responds with an error.
+     *
+     * @example
+     * const sheet = await client.matches.matchSheet("match123");
+     * console.log(sheet.url);
+     */
+    async matchSheet(id: string) {
+        return this.client.makeRequest<MatchSheetReturn>(this.basePath + '/sheet' + id, {
             method: 'GET',
         });
     }
