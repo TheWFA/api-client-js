@@ -31,4 +31,22 @@ export class SeasonsResource extends APIResource {
             method: 'GET',
         });
     }
+    /**
+     * Retrieves a single season by its unique identifier.
+     *
+     * Sends a GET request to fetch detailed information about a specific
+     * {@link MatchDaySeasonPartial} object from the API.
+     *
+     * @async
+     * @function
+     * @param  id - The unique identifier of the season to retrieve.
+     * @returns  A promise that resolves to the requested season summary.
+     *
+     * @throws {APIError} If the request fails or the server responds with an error.
+     */
+    async get(id: string) {
+        return this.client.makeRequest<MatchDaySeasonPartial>(this.basePath + '/' + id, {
+            method: 'GET',
+        });
+    }
 }
