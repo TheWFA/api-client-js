@@ -1,7 +1,6 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { MatchDayBaseListQuery } from '../types';
 import { MatchDayPerson, MatchDayPersonPartial, MatchDayPersonQuery } from '../types/person';
 
 import { APIResource } from './resource';

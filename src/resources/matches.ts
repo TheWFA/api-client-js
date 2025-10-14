@@ -3,7 +3,7 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayFullMatch, MatchDayMatch } from '../types/match';
 import { MatchDayMatchQuery } from '../types/match-query';
-import { MatchReport, MatchSheetReturn } from '../types';
+import { MatchDayMatchReport, MatchDayMatchSheetReturn } from '../types';
 
 import { APIResource } from './resource';
 
@@ -78,7 +78,7 @@ export class MatchResource extends APIResource {
      * console.log(report);
      */
     async matchReport(id: string) {
-        return this.client.makeRequest<MatchReport>(this.basePath + '/report' + id, {
+        return this.client.makeRequest<MatchDayMatchReport>(this.basePath + '/report' + id, {
             method: 'GET',
         });
     }
@@ -101,7 +101,7 @@ export class MatchResource extends APIResource {
      * console.log(sheet.url);
      */
     async matchSheet(id: string) {
-        return this.client.makeRequest<MatchSheetReturn>(this.basePath + '/sheet' + id, {
+        return this.client.makeRequest<MatchDayMatchSheetReturn>(this.basePath + '/sheet' + id, {
             method: 'GET',
         });
     }
