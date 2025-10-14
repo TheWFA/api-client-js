@@ -9,14 +9,21 @@ import { parseDates } from './time';
 import { MatchDayAPIError } from './types/errors';
 import { UsersResource } from './resources/users';
 
+export enum MatchDayAPIVersion {
+    V1 = '/v1',
+    DEFAULT = '',
+}
+
 export type APIClientConfig = {
     baseURL?: string;
     apiKey?: string;
     accessToken?: string;
+    version?: MatchDayAPIVersion;
 };
 
 const defaultConfig: APIClientConfig = {
     baseURL: 'https://api.thewfa.org.uk',
+    version: MatchDayAPIVersion.V1,
 };
 
 export class MatchDayClient {
@@ -58,13 +65,16 @@ export class MatchDayClient {
             defaultHeaders['Authorization'] = `Bearer ${this.config.accessToken}`;
         }
 
-        const res = await fetch(this.config.baseURL + path, {
-            ...init,
-            headers: {
-                ...defaultHeaders,
-                ...(init?.headers || {}),
+        const res = await fetch(
+            this.config.baseURL + (this.config.version ?? defaultConfig.version!) + path,
+            {
+                ...init,
+                headers: {
+                    ...defaultHeaders,
+                    ...(init?.headers || {}),
+                },
             },
-        });
+        );
 
         if (res.status === 204) {
             return {} as T;
