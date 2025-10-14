@@ -4,9 +4,9 @@ export type MatchDayOAuth2Scope = {
     description: string;
 };
 
-export type MatchDayOAuth2ScopeId = keyof typeof SCOPES;
+export type MatchDayOAuth2ScopeId = keyof typeof MatchDayScopes;
 
-export const SCOPES = {
+export const MatchDayScopes = {
     email: {
         id: 'email',
         name: 'Read your name and email',

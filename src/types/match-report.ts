@@ -1,7 +1,7 @@
-import { MatchPlayer } from './match';
+import { MatchDayMatchPlayer } from './match';
 import { MatchDayPersonPartial } from './person';
 
-export type MatchPlayerSpeedTest = {
+export type MatchDayMatchPlayerSpeedTest = {
     person: MatchDayPersonPartial;
     speedTest1: boolean | null;
     speedTest2: boolean | null;
@@ -10,25 +10,25 @@ export type MatchPlayerSpeedTest = {
     speedTestPost2: boolean | null;
 };
 
-export type MatchReportScores = {
+export type MatchDayMatchReportScores = {
     fairPlay: number;
     refereeScore: number;
-    playerOfTheMatch: MatchPlayer;
+    playerOfTheMatch: MatchDayMatchPlayer;
 };
 
-export type MatchReportTeam = {
-    speedTests: MatchPlayerSpeedTest[];
-    scores: MatchReportScores;
+export type MatchDayMatchReportTeam = {
+    speedTests: MatchDayMatchPlayerSpeedTest[];
+    scores: MatchDayMatchReportScores;
     coachSignature: string;
 };
 
-export type MatchReport = {
-    homeTeam: MatchReportTeam;
-    awayTeam: MatchReportTeam;
+export type MatchDayMatchReport = {
+    homeTeam: MatchDayMatchReportTeam;
+    awayTeam: MatchDayMatchReportTeam;
     officialSignature: string;
 };
 
-export type MatchSheetReturn = {
+export type MatchDayMatchSheetReturn = {
     ok: boolean;
     url: string;
 };

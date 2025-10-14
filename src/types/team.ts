@@ -36,7 +36,7 @@ export type MatchDayClubHistory = {
     createdAt: Date;
 };
 
-export type Club = MatchDayClubPartial & {
+export type MatchDayClub = MatchDayClubPartial & {
     contactEmail: string;
     history: MatchDayClubHistory[];
 };

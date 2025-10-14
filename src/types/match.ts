@@ -75,7 +75,7 @@ export enum MatchDayPlayerPostition {
     Substitute = 'sub',
 }
 
-export type MatchPlayer = {
+export type MatchDayMatchPlayer = {
     person: MatchDayPersonPartial;
     number: number;
     position: MatchDayPlayerPostition | null;
@@ -84,7 +84,7 @@ export type MatchPlayer = {
 
 export type MatchDayFullMatch = {
     details: MatchDayMatch;
-    homeLineups: MatchPlayer[];
-    awayLineups: MatchPlayer[];
+    homeLineups: MatchDayMatchPlayer[];
+    awayLineups: MatchDayMatchPlayer[];
     events: MatchDayMatchEvent[];
 };
