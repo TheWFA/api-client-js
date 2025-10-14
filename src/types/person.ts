@@ -1,6 +1,19 @@
+import { MatchDayBaseListQuery } from './api';
 import { MatchDayCompetitionPartial } from './competitions';
 import { MatchDaySeasonPartial } from './season';
 import { MatchDayTeamPartial, MatchDayTeamStaffRole } from './team';
+
+export enum MatchDayPersonType {
+    Player = 'player',
+    Coach = 'coach',
+    Staff = 'staff',
+    Referee = 'referee',
+    Official = 'official',
+}
+
+export type MatchDayPersonQuery = MatchDayBaseListQuery & {
+    type: MatchDayPersonType[];
+};
 
 export type MatchDayPersonPartial = {
     id: string;

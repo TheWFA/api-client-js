@@ -2,7 +2,7 @@ import qs from 'qs';
 
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types';
-import { MatchDayPerson, MatchDayPersonPartial } from '../types/person';
+import { MatchDayPerson, MatchDayPersonPartial, MatchDayPersonQuery } from '../types/person';
 
 import { APIResource } from './resource';
 
@@ -49,7 +49,7 @@ export class PersonsResource extends APIResource {
      * const people = await client.people.list({ limit: 20 });
      * console.log(people[0].id, people[0].name);
      */
-    async list(query: MatchDayBaseListQuery) {
+    async list(query: MatchDayPersonQuery) {
         const queryString = qs.stringify(query);
 
         return this.client.makeRequest<MatchDayPersonPartial[]>(this.basePath + '?' + queryString, {
