@@ -78,7 +78,7 @@ export class MatchResource extends APIResource {
      * console.log(report);
      */
     async matchReport(id: string) {
-        return this.client.makeRequest<MatchDayMatchReport>(this.basePath + '/report' + id, {
+        return this.client.makeRequest<MatchDayMatchReport>(`${this.basePath}/${id}/report`, {
             method: 'GET',
         });
     }
@@ -101,7 +101,7 @@ export class MatchResource extends APIResource {
      * console.log(sheet.url);
      */
     async matchSheet(id: string) {
-        return this.client.makeRequest<MatchDayMatchSheetReturn>(this.basePath + '/sheet' + id, {
+        return this.client.makeRequest<MatchDayMatchSheetReturn>(`${this.basePath}/${id}/sheet`, {
             method: 'GET',
         });
     }

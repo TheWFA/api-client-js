@@ -31,6 +31,7 @@ export class SeasonsResource extends APIResource {
             method: 'GET',
         });
     }
+
     /**
      * Retrieves a single season by its unique identifier.
      *
