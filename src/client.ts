@@ -60,7 +60,7 @@ export class MatchDayClient {
         }
 
         if (this.config.apiKey) {
-            defaultHeaders['X-API-Key'] = `Key ${this.config.apiKey}`;
+            defaultHeaders['Authorization'] = `ApiKey ${this.config.apiKey}`;
         }
 
         if (this.config.accessToken) {

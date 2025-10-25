@@ -1,16 +1,17 @@
-import { MatchDayPerson } from './person';
+import { MatchDayPerson, MatchDayPersonPartial } from './person';
 
-export type MatchDayUserPartial = {
+export type MatchDayUserProfile = {
     id: string;
     name: string;
-    email: string;
     image: string | null;
     createdAt: Date;
 };
 
 export type MatchDayUser = {
-    banned: boolean;
-    role: string;
-    permissions: Record<string, boolean>;
-    persons: MatchDayPerson[];
-} & MatchDayUserPartial;
+    id: string;
+    name: string;
+    image: string | null;
+    createdAt: Date;
+    email?: string;
+    persons: MatchDayPersonPartial[] | MatchDayPerson[];
+};

@@ -1,5 +1,5 @@
 import { MatchDayAPIError } from './types/errors';
-import { MatchDayOAuth2ScopeId } from './types/oauth2';
+import { MatchDayOAuth2Scope } from './types/oauth2';
 
 export type MatchDayOAuthClientConfig = {
     clientId: string;
@@ -11,6 +11,7 @@ export type MatchDayOAuthClientConfig = {
 
 export type MatchDayAccessTokenReturn = {
     access_token: string;
+    refresh_token?: string;
     token_type: string;
     expires_in: number;
     scope: string;
@@ -44,7 +45,7 @@ export class MatchDayOAuthClient {
      * @returns Fully constructed authorization URL.
      */
     async authorize(
-        scopes: MatchDayOAuth2ScopeId[],
+        scopes: MatchDayOAuth2Scope[],
         redirectURL: string,
         state?: string,
     ): Promise<AuthorizeReturn> {
