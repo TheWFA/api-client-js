@@ -47,6 +47,16 @@ describe('parseDates', () => {
             const result = parseDates('2024-01-15T10:30:00');
             expect(result).toBeInstanceOf(Date);
         });
+
+        it('parses datetime with space separator (API format)', () => {
+            const result = parseDates('2022-09-03 08:15:00+00');
+            expect(result).toBeInstanceOf(Date);
+        });
+
+        it('parses datetime with space separator and colon in timezone', () => {
+            const result = parseDates('2022-09-03 08:15:00+00:00');
+            expect(result).toBeInstanceOf(Date);
+        });
     });
 
     describe('does not parse non-ISO strings', () => {

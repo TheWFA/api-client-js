@@ -170,7 +170,7 @@ describeWithApi('API Integration Tests', () => {
                 expect(club).toHaveProperty('id');
                 expect(club.id).toBe(clubs[0].id);
                 expect(club).toHaveProperty('teams');
-                expect(club).toHaveProperty('contact_email');
+                expect(club).toHaveProperty('contactEmail');
             }
         });
     });

@@ -126,15 +126,15 @@ describe('ClubsResource', () => {
             const mockClub = {
                 id: 'club-123',
                 name: 'Test Club',
-                contact_email: 'info@club.org',
+                contactEmail: 'info@club.org',
                 teams: [],
             };
             makeRequestSpy.mockResolvedValueOnce(mockClub);
 
             const result = await client.clubs.get('club-123');
 
-            expect(result).toHaveProperty('contact_email');
-            expect(result.contact_email).toBe('info@club.org');
+            expect(result).toHaveProperty('contactEmail');
+            expect(result.contactEmail).toBe('info@club.org');
         });
 
         it('returns club with empty teams array', async () => {

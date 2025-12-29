@@ -7,6 +7,6 @@ export type MatchDayClubPartial = {
 };
 
 export type MatchDayClub = {
-    contact_email: string;
+    contactEmail?: string;
     teams: MatchDayTeamPartial[];
 } & MatchDayClubPartial;

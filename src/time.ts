@@ -1,5 +1,6 @@
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
+// Matches ISO datetime with T or space separator, optional milliseconds, optional timezone (with or without colon, minutes optional)
+const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}(?::?\d{2})?)?$/;
 
 function isIsoDateString(value: string): boolean {
     if (typeof value !== 'string') return false;
@@ -10,7 +11,13 @@ export function parseDates<T>(obj: T): T {
     if (obj == null) return obj;
 
     if (typeof obj === 'string' && isIsoDateString(obj)) {
-        const ms = Date.parse(obj);
+        // Normalize for Date.parse compatibility:
+        // - Replace space with T
+        // - Add colon to timezone if missing (e.g., :00+00 -> :00+00:00)
+        let normalized = obj.replace(' ', 'T');
+        // Match timezone without minutes only when preceded by seconds (:\d{2})
+        normalized = normalized.replace(/(:\d{2})([+-])(\d{2})$/, '$1$2$3:00');
+        const ms = Date.parse(normalized);
         return (isNaN(ms) ? obj : new Date(ms)) as unknown as T;
     }
 
