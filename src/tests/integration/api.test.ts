@@ -8,6 +8,7 @@
 
 import { MatchDayClient } from '../../client';
 import { MatchDayOAuthClient } from '../../oauth2';
+import { MatchDayNotFoundError, MatchDayUnauthorizedError } from '../../types/errors';
 
 // Increase timeout for integration tests (30 seconds)
 jest.setTimeout(30000);
@@ -181,6 +182,48 @@ describeWithApi('API Integration Tests', () => {
 
             if (matches.length > 0 && matches[0].scheduledFor) {
                 expect(matches[0].scheduledFor).toBeInstanceOf(Date);
+            }
+        });
+    });
+
+    describe('Error handling', () => {
+        it('throws MatchDayNotFoundError for non-existent resource', async () => {
+            await expect(client.matches.get('100000')).rejects.toThrow(MatchDayNotFoundError);
+        });
+
+        it('throws MatchDayNotFoundError with correct status code', async () => {
+            try {
+                await client.teams.get('100000');
+                fail('Expected MatchDayNotFoundError to be thrown');
+            } catch (error) {
+                expect(error).toBeInstanceOf(MatchDayNotFoundError);
+                expect((error as MatchDayNotFoundError).status).toBe(404);
+            }
+        });
+
+        it('throws MatchDayUnauthorizedError for invalid API key', async () => {
+            const invalidClient = new MatchDayClient({
+                apiKey: 'invalid-api-key',
+                baseURL: process.env.MATCHDAY_API_URL,
+            });
+
+            await expect(invalidClient.matches.list({ itemsPerPage: 1 })).rejects.toThrow(
+                MatchDayUnauthorizedError,
+            );
+        });
+
+        it('throws MatchDayUnauthorizedError with correct status code', async () => {
+            const invalidClient = new MatchDayClient({
+                apiKey: 'invalid-api-key',
+                baseURL: process.env.MATCHDAY_API_URL,
+            });
+
+            try {
+                await invalidClient.matches.list({ itemsPerPage: 1 });
+                fail('Expected MatchDayUnauthorizedError to be thrown');
+            } catch (error) {
+                expect(error).toBeInstanceOf(MatchDayUnauthorizedError);
+                expect((error as MatchDayUnauthorizedError).status).toBe(401);
             }
         });
     });
