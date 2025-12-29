@@ -1,3 +1,4 @@
+import { MatchDayClubPartial } from './clubs';
 import { MatchDayCompetitionPartial } from './competitions';
 import { MatchDayPersonPartial } from './person';
 
@@ -23,22 +24,11 @@ export type MatchDayTeam = MatchDayTeamPartial & {
     parentClub?: MatchDayClubPartial;
 };
 
-export type MatchDayClubPartial = {
-    id: string;
-    name: string;
-    logo: string;
-};
-
 export type MatchDayClubHistory = {
     name?: string;
     contactEmail?: string;
     clubLogo?: string;
     createdAt: Date;
-};
-
-export type MatchDayClub = MatchDayClubPartial & {
-    contactEmail: string;
-    history: MatchDayClubHistory[];
 };
 
 export type MatchDayTeamPlayerRegistration = {

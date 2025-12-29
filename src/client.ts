@@ -9,6 +9,7 @@ import { parseDates } from './time';
 import { MatchDayAPIError } from './types/errors';
 import { UsersResource } from './resources/users';
 import { LocationsResource } from './resources/locations';
+import { ClubsResource } from './resources/clubs';
 
 export enum MatchDayAPIVersion {
     V1 = '/v1',
@@ -38,6 +39,7 @@ export class MatchDayClient {
     public readonly search = new SearchResource(this);
     public readonly users = new UsersResource(this);
     public readonly locations = new LocationsResource(this);
+    public readonly clubs = new ClubsResource(this);
 
     constructor(config: APIClientConfig) {
         this.config = {

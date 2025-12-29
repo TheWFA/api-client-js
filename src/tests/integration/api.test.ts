@@ -155,6 +155,26 @@ describeWithApi('API Integration Tests', () => {
         });
     });
 
+    describe('Clubs', () => {
+        it('lists clubs', async () => {
+            const clubs = await client.clubs.list({ itemsPerPage: 5 });
+
+            expect(Array.isArray(clubs)).toBe(true);
+        });
+
+        it('gets a single club when clubs exist', async () => {
+            const clubs = await client.clubs.list({ itemsPerPage: 1 });
+
+            if (clubs.length > 0) {
+                const club = await client.clubs.get(clubs[0].id);
+                expect(club).toHaveProperty('id');
+                expect(club.id).toBe(clubs[0].id);
+                expect(club).toHaveProperty('teams');
+                expect(club).toHaveProperty('contact_email');
+            }
+        });
+    });
+
     describe('Date parsing', () => {
         it('parses dates in match responses', async () => {
             const matches = await client.matches.list({ itemsPerPage: 1 });
