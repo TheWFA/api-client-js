@@ -1,9 +1,11 @@
 export * from './api';
 export * from './competitions';
+export * from './clubs';
 export * from './errors';
 export * from './locations';
 export * from './match';
 export * from './match-events';
+export * from './match-report';
 export * from './match-query';
 export * from './oauth2';
 export * from './person';
@@ -11,4 +13,3 @@ export * from './search';
 export * from './season';
 export * from './team';
 export * from './users';
-export * from './match-report';
