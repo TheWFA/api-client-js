@@ -18,7 +18,7 @@ export type MatchDayCompetitionPartial = {
 export type MatchDayCompetition = {
     seasons: MatchDaySeasonPartial[];
     activeSeasonId: string;
-    previousNames: { name: string; created_at: Date };
+    history: { name: string | null; logo: string | null; created_at: Date };
 } & Omit<MatchDayCompetitionPartial, 'activeSeason'>;
 
 export type MatchDayCompetitionTableRow = {
