@@ -1,5 +1,15 @@
 import { MatchDayClient } from '../../client';
 import { CompetitionsResource } from '../../resources/competitions';
+import { ListResponse, PaginationMeta } from '../../types/list-response';
+
+const mockPagination: PaginationMeta = {
+    totalItems: 100,
+    totalPages: 10,
+    currentPage: 1,
+    itemsPerPage: 10,
+    hasNextPage: true,
+    hasPrevPage: false,
+};
 
 describe('CompetitionsResource', () => {
     const originalFetch = global.fetch;
@@ -30,18 +40,27 @@ describe('CompetitionsResource', () => {
                 { id: '1', name: 'Premier League' },
                 { id: '2', name: 'Championship' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockCompetitions);
+            const mockResponse: ListResponse<(typeof mockCompetitions)[0]> = {
+                items: mockCompetitions,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.competitions.list({ itemsPerPage: 10, page: 1 });
 
             expect(makeRequestSpy).toHaveBeenCalledWith('/competitions?itemsPerPage=10&page=1', {
                 method: 'GET',
             });
-            expect(result).toEqual(mockCompetitions);
+            expect(result.items).toEqual(mockCompetitions);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles pagination parameters', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 3, itemsPerPage: 25 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.competitions.list({ itemsPerPage: 25, page: 3 });
 
@@ -50,12 +69,17 @@ describe('CompetitionsResource', () => {
             expect(path).toContain('page=3');
         });
 
-        it('returns empty array when no competitions found', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+        it('returns empty items array when no competitions found', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.competitions.list({ itemsPerPage: 10 });
 
-            expect(result).toEqual([]);
+            expect(result.items).toEqual([]);
+            expect(result.pagination.totalItems).toBe(0);
         });
     });
 
@@ -83,7 +107,11 @@ describe('CompetitionsResource', () => {
                 { id: 'team-1', name: 'Team A' },
                 { id: 'team-2', name: 'Team B' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockTeams);
+            const mockResponse: ListResponse<(typeof mockTeams)[0]> = {
+                items: mockTeams,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.competitions.listTeams('comp-123', 'season-2024', {
                 itemsPerPage: 20,
@@ -93,11 +121,16 @@ describe('CompetitionsResource', () => {
                 '/competitions/comp-123/season-2024/teams?itemsPerPage=20',
                 { method: 'GET' },
             );
-            expect(result).toEqual(mockTeams);
+            expect(result.items).toEqual(mockTeams);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles pagination for teams list', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 4, itemsPerPage: 10 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.competitions.listTeams('comp-123', 'season-2024', {
                 itemsPerPage: 10,

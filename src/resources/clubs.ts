@@ -3,6 +3,7 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types/api';
 import { MatchDayClub, MatchDayClubPartial } from '../types/clubs';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -14,21 +15,30 @@ export class ClubsResource extends APIResource {
     /**
      * Retrieves a paginated list of clubs.
      *
-     * Builds a query string from the provided {@link BaseListQuery} options
-     * and fetches an array of {@link MatchDayClubPartial} objects from the API.
+     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDayClubPartial} objects from the API.
      *
      * @async
      * @function
-     * @param {BaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @returns A promise that resolves to a {@link ListResponse} containing clubs and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     *
+     * @example
+     * const response = await client.clubs.list({ itemsPerPage: 20 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayClubPartial[]>(this.basePath + '?' + queryString, {
-            method: 'GET',
-        });
+        return this.client.makeRequest<ListResponse<MatchDayClubPartial>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
     }
 
     /**

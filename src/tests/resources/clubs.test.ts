@@ -1,5 +1,15 @@
 import { MatchDayClient } from '../../client';
 import { ClubsResource } from '../../resources/clubs';
+import { ListResponse, PaginationMeta } from '../../types/list-response';
+
+const mockPagination: PaginationMeta = {
+    totalItems: 100,
+    totalPages: 10,
+    currentPage: 1,
+    itemsPerPage: 10,
+    hasNextPage: true,
+    hasPrevPage: false,
+};
 
 describe('ClubsResource', () => {
     const originalFetch = global.fetch;
@@ -30,18 +40,27 @@ describe('ClubsResource', () => {
                 { id: 'club-1', name: 'Club A', logo: 'https://example.com/logo1.png' },
                 { id: 'club-2', name: 'Club B' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockClubs);
+            const mockResponse: ListResponse<(typeof mockClubs)[0]> = {
+                items: mockClubs,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.clubs.list({ itemsPerPage: 10, page: 1 });
 
             expect(makeRequestSpy).toHaveBeenCalledWith('/clubs?itemsPerPage=10&page=1', {
                 method: 'GET',
             });
-            expect(result).toEqual(mockClubs);
+            expect(result.items).toEqual(mockClubs);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles pagination parameters', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 3, itemsPerPage: 25 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.clubs.list({ itemsPerPage: 25, page: 3 });
 
@@ -51,7 +70,11 @@ describe('ClubsResource', () => {
         });
 
         it('handles query search parameter', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.clubs.list({ query: 'United', itemsPerPage: 10 });
 
@@ -59,12 +82,17 @@ describe('ClubsResource', () => {
             expect(path).toContain('query=United');
         });
 
-        it('returns empty array when no clubs found', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+        it('returns empty items array when no clubs found', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.clubs.list({ itemsPerPage: 10 });
 
-            expect(result).toEqual([]);
+            expect(result.items).toEqual([]);
+            expect(result.pagination.totalItems).toBe(0);
         });
 
         it('returns clubs with optional logo field', async () => {
@@ -72,12 +100,16 @@ describe('ClubsResource', () => {
                 { id: 'club-1', name: 'Club With Logo', logo: 'https://example.com/logo.png' },
                 { id: 'club-2', name: 'Club Without Logo' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockClubs);
+            const mockResponse: ListResponse<(typeof mockClubs)[0]> = {
+                items: mockClubs,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.clubs.list({ itemsPerPage: 10 });
 
-            expect(result[0]).toHaveProperty('logo');
-            expect(result[1].logo).toBeUndefined();
+            expect(result.items[0]).toHaveProperty('logo');
+            expect(result.items[1].logo).toBeUndefined();
         });
     });
 

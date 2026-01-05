@@ -3,6 +3,7 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types/api';
 import { MatchDaySeasonPartial } from '../types/season';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -14,22 +15,30 @@ export class SeasonsResource extends APIResource {
     /**
      * Retrieves a paginated list of seasons.
      *
-     * Builds a query string from the provided {@link BaseListQuery} options
-     * and fetches an array of {@link SeasonPartial} objects from the API.
+     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDaySeasonPartial} objects from the API.
      *
      * @async
      * @function
-     * @param  query - Query parameters such as pagination, filters, or sorting.
-     * @returns  A promise that resolves to an array of season summaries.
+     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @returns A promise that resolves to a {@link ListResponse} containing seasons and pagination metadata.
      *
-     * @throws {APIError} If the request fails or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     *
+     * @example
+     * const response = await client.seasons.list({ itemsPerPage: 20 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDaySeasonPartial[]>(this.basePath + '?' + queryString, {
-            method: 'GET',
-        });
+        return this.client.makeRequest<ListResponse<MatchDaySeasonPartial>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
     }
 
     /**

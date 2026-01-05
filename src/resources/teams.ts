@@ -8,6 +8,7 @@ import {
     MatchDayTeamStaffRegistration,
     MatchDayTeamPlayerRegistration,
 } from '../types/team';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -19,21 +20,30 @@ export class TeamsResource extends APIResource {
     /**
      * Retrieves a paginated list of teams.
      *
-     * Builds a query string from the provided {@link BaseListQuery} options
-     * and fetches an array of {@link TeamPartial} objects from the API.
+     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDayTeamPartial} objects from the API.
      *
      * @async
      * @function
-     * @param {BaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @returns A promise that resolves to a {@link ListResponse} containing teams and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     *
+     * @example
+     * const response = await client.teams.list({ itemsPerPage: 20 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayTeamPartial[]>(this.basePath + '?' + queryString, {
-            method: 'GET',
-        });
+        return this.client.makeRequest<ListResponse<MatchDayTeamPartial>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
     }
 
     /**

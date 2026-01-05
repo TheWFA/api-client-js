@@ -1,5 +1,15 @@
 import { MatchDayClient } from '../../client';
 import { SeasonsResource } from '../../resources/seasons';
+import { ListResponse, PaginationMeta } from '../../types/list-response';
+
+const mockPagination: PaginationMeta = {
+    totalItems: 100,
+    totalPages: 10,
+    currentPage: 1,
+    itemsPerPage: 10,
+    hasNextPage: true,
+    hasPrevPage: false,
+};
 
 describe('SeasonsResource', () => {
     const originalFetch = global.fetch;
@@ -30,18 +40,27 @@ describe('SeasonsResource', () => {
                 { id: 'season-2024', name: '2024/25 Season' },
                 { id: 'season-2023', name: '2023/24 Season' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockSeasons);
+            const mockResponse: ListResponse<(typeof mockSeasons)[0]> = {
+                items: mockSeasons,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.seasons.list({ itemsPerPage: 10, page: 1 });
 
             expect(makeRequestSpy).toHaveBeenCalledWith('/seasons?itemsPerPage=10&page=1', {
                 method: 'GET',
             });
-            expect(result).toEqual(mockSeasons);
+            expect(result.items).toEqual(mockSeasons);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles pagination parameters', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 3, itemsPerPage: 5 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.seasons.list({ itemsPerPage: 5, page: 3 });
 
@@ -50,12 +69,17 @@ describe('SeasonsResource', () => {
             expect(path).toContain('page=3');
         });
 
-        it('returns empty array when no seasons found', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+        it('returns empty items array when no seasons found', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.seasons.list({ itemsPerPage: 10 });
 
-            expect(result).toEqual([]);
+            expect(result.items).toEqual([]);
+            expect(result.pagination.totalItems).toBe(0);
         });
     });
 

@@ -3,6 +3,7 @@ import qs from 'qs';
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types/api';
 import { MatchDayLocationWithCourts } from '../types';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -15,19 +16,24 @@ export class LocationsResource extends APIResource {
      * Retrieves a paginated list of locations with their associated courts.
      *
      * Builds a query string from the provided {@link MatchDayBaseListQuery} options
-     * and fetches an array of {@link MatchDayLocationWithCourts} objects from the API.
+     * and fetches a {@link ListResponse} containing {@link MatchDayLocationWithCourts} objects from the API.
      *
      * @async
      * @function
-     * @param  query - Query parameters such as pagination, filters, or sorting.
-     * @returns  A promise that resolves to an array of location summaries with courts.
+     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @returns A promise that resolves to a {@link ListResponse} containing locations and pagination metadata.
      *
-     * @throws {APIError} If the request fails or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     *
+     * @example
+     * const response = await client.locations.list({ itemsPerPage: 20 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayLocationWithCourts[]>(
+        return this.client.makeRequest<ListResponse<MatchDayLocationWithCourts>>(
             this.basePath + '?' + queryString,
             {
                 method: 'GET',

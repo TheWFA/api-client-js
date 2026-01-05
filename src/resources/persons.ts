@@ -2,6 +2,7 @@ import qs from 'qs';
 
 import { MatchDayClient } from '../client';
 import { MatchDayPerson, MatchDayPersonPartial, MatchDayPersonQuery } from '../types/person';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -32,27 +33,31 @@ export class PersonsResource extends APIResource {
     }
 
     /**
-     * Retrieves a list of people.
+     * Retrieves a paginated list of people.
      *
-     * Makes a `GET` request to fetch an array of {@link MatchDayPersonPartial} resources
+     * Makes a `GET` request to fetch a {@link ListResponse} containing {@link MatchDayPersonPartial} resources
      * based on the provided query parameters.
      *
      * @async
      * @function
-     * @param {MatchDayBaseListQuery} query - The filtering and pagination options for the request.
-     * @returns  A promise that resolves to an array of partial person objects.
+     * @param {MatchDayPersonQuery} query - The filtering and pagination options for the request.
+     * @returns A promise that resolves to a {@link ListResponse} containing persons and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails, the query is invalid, or the server responds with an error.
      *
      * @example
-     * const people = await client.people.list({ limit: 20 });
-     * console.log(people[0].id, people[0].name);
+     * const response = await client.persons.list({ itemsPerPage: 20, type: [] });
+     * console.log(response.items[0].id, response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayPersonQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayPersonPartial[]>(this.basePath + '?' + queryString, {
-            method: 'GET',
-        });
+        return this.client.makeRequest<ListResponse<MatchDayPersonPartial>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
     }
 }

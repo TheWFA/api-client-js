@@ -1,5 +1,15 @@
 import { MatchDayClient } from '../../client';
 import { SearchResource } from '../../resources/search';
+import { ListResponse, PaginationMeta } from '../../types/list-response';
+
+const mockPagination: PaginationMeta = {
+    totalItems: 100,
+    totalPages: 10,
+    currentPage: 1,
+    itemsPerPage: 10,
+    hasNextPage: true,
+    hasPrevPage: false,
+};
 
 describe('SearchResource', () => {
     const originalFetch = global.fetch;
@@ -30,30 +40,44 @@ describe('SearchResource', () => {
                 { type: 'team', id: 'team-1', name: 'United FC' },
                 { type: 'person', id: 'person-1', name: 'John United' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockResults);
+            const mockResponse: ListResponse<(typeof mockResults)[0]> = {
+                items: mockResults,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.search.list({ query: 'United', itemsPerPage: 10 });
 
-            expect(makeRequestSpy).toHaveBeenCalledWith(
-                expect.stringContaining('/search?'),
-                { method: 'GET' },
-            );
+            expect(makeRequestSpy).toHaveBeenCalledWith(expect.stringContaining('/search?'), {
+                method: 'GET',
+            });
             const path = makeRequestSpy.mock.calls[0][0] as string;
             expect(path).toContain('query=United');
             expect(path).toContain('itemsPerPage=10');
-            expect(result).toEqual(mockResults);
+            expect(result.items).toEqual(mockResults);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles empty search query', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.search.list({ itemsPerPage: 10 });
 
-            expect(makeRequestSpy).toHaveBeenCalledWith('/search?itemsPerPage=10', { method: 'GET' });
+            expect(makeRequestSpy).toHaveBeenCalledWith('/search?itemsPerPage=10', {
+                method: 'GET',
+            });
         });
 
         it('handles pagination parameters', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 3, itemsPerPage: 20 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.search.list({ query: 'test', itemsPerPage: 20, page: 3 });
 
@@ -68,22 +92,31 @@ describe('SearchResource', () => {
                 { type: 'competition', id: 'comp-1', name: 'Arsenal Cup' },
                 { type: 'person', id: 'person-1', name: 'Arsenal Player' },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockResults);
+            const mockResponse: ListResponse<(typeof mockResults)[0]> = {
+                items: mockResults,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.search.list({ query: 'Arsenal' });
 
-            expect(result.length).toBe(3);
-            expect(result.map((r) => r.type)).toContain('team');
-            expect(result.map((r) => r.type)).toContain('competition');
-            expect(result.map((r) => r.type)).toContain('person');
+            expect(result.items.length).toBe(3);
+            expect(result.items.map((r) => r.type)).toContain('team');
+            expect(result.items.map((r) => r.type)).toContain('competition');
+            expect(result.items.map((r) => r.type)).toContain('person');
         });
 
-        it('returns empty array when no results found', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+        it('returns empty items array when no results found', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.search.list({ query: 'nonexistent' });
 
-            expect(result).toEqual([]);
+            expect(result.items).toEqual([]);
+            expect(result.pagination.totalItems).toBe(0);
         });
     });
 });

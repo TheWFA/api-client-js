@@ -4,6 +4,7 @@ import { MatchDayClient } from '../client';
 import { MatchDayFullMatch, MatchDayMatch } from '../types/match';
 import { MatchDayMatchQuery } from '../types/match-query';
 import { MatchDayMatchReport, MatchDayMatchSheetReturn } from '../types';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -13,28 +14,32 @@ export class MatchResource extends APIResource {
     }
 
     /**
-     * Retrieves a list of matches matching the given query.
+     * Retrieves a paginated list of matches matching the given query.
      *
-     * Builds a query string from the provided {@link MatchQuery} options
-     * and fetches an array of {@link Match} objects from the API.
+     * Builds a query string from the provided {@link MatchDayMatchQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDayMatch} objects from the API.
      *
      * @async
      * @function
-     * @param {MatchQuery} query - Query parameters such as filters, search options, or pagination.
-     * @returns  A promise that resolves to an array of matches.
+     * @param {MatchDayMatchQuery} query - Query parameters such as filters, search options, or pagination.
+     * @returns A promise that resolves to a {@link ListResponse} containing matches and pagination metadata.
      *
-     * @throws {APIError} If the request fails or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
      *
      * @example
-     * const matches = await client.matches.list({ season: "2025", limit: 10 });
-     * console.log(matches[0].id);
+     * const response = await client.matches.list({ season: ["2025"], itemsPerPage: 10 });
+     * console.log(response.items[0].id);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayMatchQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayMatch[]>(this.basePath + '?' + queryString, {
-            method: 'GET',
-        });
+        return this.client.makeRequest<ListResponse<MatchDayMatch>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
     }
 
     /**

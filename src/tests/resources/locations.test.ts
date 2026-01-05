@@ -1,5 +1,15 @@
 import { MatchDayClient } from '../../client';
 import { LocationsResource } from '../../resources/locations';
+import { ListResponse, PaginationMeta } from '../../types/list-response';
+
+const mockPagination: PaginationMeta = {
+    totalItems: 100,
+    totalPages: 10,
+    currentPage: 1,
+    itemsPerPage: 10,
+    hasNextPage: true,
+    hasPrevPage: false,
+};
 
 describe('LocationsResource', () => {
     const originalFetch = global.fetch;
@@ -38,18 +48,27 @@ describe('LocationsResource', () => {
                     courts: [{ id: 'court-2', name: 'Court 1' }],
                 },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockLocations);
+            const mockResponse: ListResponse<(typeof mockLocations)[0]> = {
+                items: mockLocations,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.locations.list({ itemsPerPage: 10, page: 1 });
 
             expect(makeRequestSpy).toHaveBeenCalledWith('/locations?itemsPerPage=10&page=1', {
                 method: 'GET',
             });
-            expect(result).toEqual(mockLocations);
+            expect(result.items).toEqual(mockLocations);
+            expect(result.pagination).toEqual(mockPagination);
         });
 
         it('handles pagination parameters', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, currentPage: 3, itemsPerPage: 25 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.locations.list({ itemsPerPage: 25, page: 3 });
 
@@ -70,20 +89,29 @@ describe('LocationsResource', () => {
                     ],
                 },
             ];
-            makeRequestSpy.mockResolvedValueOnce(mockLocations);
+            const mockResponse: ListResponse<(typeof mockLocations)[0]> = {
+                items: mockLocations,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.locations.list({ itemsPerPage: 10 });
 
-            expect(result[0].courts).toHaveLength(2);
-            expect(result[0].courts[0]).toHaveProperty('name');
+            expect(result.items[0].courts).toHaveLength(2);
+            expect(result.items[0].courts[0]).toHaveProperty('name');
         });
 
-        it('returns empty array when no locations found', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
+        it('returns empty items array when no locations found', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.locations.list({ itemsPerPage: 10 });
 
-            expect(result).toEqual([]);
+            expect(result.items).toEqual([]);
+            expect(result.pagination.totalItems).toBe(0);
         });
     });
 

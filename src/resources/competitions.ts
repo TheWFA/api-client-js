@@ -8,6 +8,7 @@ import {
     MatchDayCompetitionTableRow,
 } from '../types/competitions';
 import { MatchDayTeamPartial } from '../types/team';
+import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
@@ -17,26 +18,27 @@ export class CompetitionsResource extends APIResource {
     }
 
     /**
-     * Retrieves a list of competitions.
+     * Retrieves a paginated list of competitions.
      *
-     * Builds a query string from the provided {@link BaseListQuery} options
-     * and fetches an array of {@link MatchDayCompetitionPartial} objects from the API.
+     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDayCompetitionPartial} objects from the API.
      *
      * @async
      * @function
      * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
-     * @returns  A promise that resolves to an array of competitions.
+     * @returns A promise that resolves to a {@link ListResponse} containing competitions and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
      *
      * @example
-     * const competitions = await client.competitions.list({ limit: 20 });
-     * console.log(competitions[0].name);
+     * const response = await client.competitions.list({ itemsPerPage: 20 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async list(query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayCompetitionPartial[]>(
+        return this.client.makeRequest<ListResponse<MatchDayCompetitionPartial>>(
             this.basePath + '?' + queryString,
             {
                 method: 'GET',
@@ -47,26 +49,27 @@ export class CompetitionsResource extends APIResource {
     /**
      * Retrieves the teams participating in a competition for a specific season.
      *
-     * Builds a query string from the provided {@link BaseListQuery} options
-     * and fetches an array of {@link TeamPartial} objects.
+     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
+     * and fetches a {@link ListResponse} containing {@link MatchDayTeamPartial} objects.
      *
      * @async
      * @function
      * @param {string} competitionId - The unique identifier of the competition.
      * @param {string} seasonId - The unique identifier of the season within the competition.
      * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
-     * @returns A promise that resolves to an array of teams.
+     * @returns A promise that resolves to a {@link ListResponse} containing teams and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails, the competition or season is not found, or the server responds with an error.
      *
      * @example
-     * const teams = await client.competitions.listTeams("comp123", "season2025", { limit: 10 });
-     * console.log(teams[0].name);
+     * const response = await client.competitions.listTeams("comp123", "season2025", { itemsPerPage: 10 });
+     * console.log(response.items[0].name);
+     * console.log(response.pagination.totalItems);
      */
     async listTeams(competitionId: string, seasonId: string, query: MatchDayBaseListQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayTeamPartial[]>(
+        return this.client.makeRequest<ListResponse<MatchDayTeamPartial>>(
             this.basePath + `/${competitionId}/${seasonId}/teams?${queryString}`,
             {
                 method: 'GET',

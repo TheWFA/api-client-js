@@ -42,134 +42,142 @@ beforeAll(() => {
 describeWithApi('API Integration Tests', () => {
     describe('Matches', () => {
         it('lists matches', async () => {
-            const matches = await client.matches.list({ itemsPerPage: 5 });
+            const response = await client.matches.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(matches)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single match when matches exist', async () => {
-            const matches = await client.matches.list({ itemsPerPage: 1 });
+            const response = await client.matches.list({ itemsPerPage: 1 });
 
-            if (matches.length > 0) {
-                const match = await client.matches.get(matches[0].id);
+            if (response.items.length > 0) {
+                const match = await client.matches.get(response.items[0].id);
                 expect(match).toHaveProperty('details');
-                expect(match.details.id).toBe(matches[0].id);
+                expect(match.details.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Teams', () => {
         it('lists teams', async () => {
-            const teams = await client.teams.list({ itemsPerPage: 5 });
+            const response = await client.teams.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(teams)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single team when teams exist', async () => {
-            const teams = await client.teams.list({ itemsPerPage: 1 });
+            const response = await client.teams.list({ itemsPerPage: 1 });
 
-            if (teams.length > 0) {
-                const team = await client.teams.get(teams[0].id);
+            if (response.items.length > 0) {
+                const team = await client.teams.get(response.items[0].id);
                 expect(team).toHaveProperty('id');
-                expect(team.id).toBe(teams[0].id);
+                expect(team.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Competitions', () => {
         it('lists competitions', async () => {
-            const competitions = await client.competitions.list({ itemsPerPage: 5 });
+            const response = await client.competitions.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(competitions)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single competition when competitions exist', async () => {
-            const competitions = await client.competitions.list({ itemsPerPage: 1 });
+            const response = await client.competitions.list({ itemsPerPage: 1 });
 
-            if (competitions.length > 0) {
-                const competition = await client.competitions.get(competitions[0].id);
+            if (response.items.length > 0) {
+                const competition = await client.competitions.get(response.items[0].id);
                 expect(competition).toHaveProperty('id');
-                expect(competition.id).toBe(competitions[0].id);
+                expect(competition.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Seasons', () => {
         it('lists seasons', async () => {
-            const seasons = await client.seasons.list({ itemsPerPage: 5 });
+            const response = await client.seasons.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(seasons)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single season when seasons exist', async () => {
-            const seasons = await client.seasons.list({ itemsPerPage: 1 });
+            const response = await client.seasons.list({ itemsPerPage: 1 });
 
-            if (seasons.length > 0) {
-                const season = await client.seasons.get(seasons[0].id);
+            if (response.items.length > 0) {
+                const season = await client.seasons.get(response.items[0].id);
                 expect(season).toHaveProperty('id');
-                expect(season.id).toBe(seasons[0].id);
+                expect(season.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Persons', () => {
         it('lists persons', async () => {
-            const persons = await client.persons.list({ itemsPerPage: 5, type: [] });
+            const response = await client.persons.list({ itemsPerPage: 5, type: [] });
 
-            expect(Array.isArray(persons)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single person when persons exist', async () => {
-            const persons = await client.persons.list({ itemsPerPage: 1, type: [] });
+            const response = await client.persons.list({ itemsPerPage: 1, type: [] });
 
-            if (persons.length > 0) {
-                const person = await client.persons.get(persons[0].id);
+            if (response.items.length > 0) {
+                const person = await client.persons.get(response.items[0].id);
                 expect(person).toHaveProperty('id');
-                expect(person.id).toBe(persons[0].id);
+                expect(person.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Search', () => {
         it('performs a search', async () => {
-            const results = await client.search.list({ query: 'test', itemsPerPage: 5 });
+            const response = await client.search.list({ query: 'test', itemsPerPage: 5 });
 
-            expect(Array.isArray(results)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
     });
 
     describe('Locations', () => {
         it('lists locations', async () => {
-            const locations = await client.locations.list({ itemsPerPage: 5 });
+            const response = await client.locations.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(locations)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single location when locations exist', async () => {
-            const locations = await client.locations.list({ itemsPerPage: 1 });
+            const response = await client.locations.list({ itemsPerPage: 1 });
 
-            if (locations.length > 0) {
-                const location = await client.locations.get(locations[0].id);
+            if (response.items.length > 0) {
+                const location = await client.locations.get(response.items[0].id);
                 expect(location).toHaveProperty('id');
-                expect(location.id).toBe(locations[0].id);
+                expect(location.id).toBe(response.items[0].id);
             }
         });
     });
 
     describe('Clubs', () => {
         it('lists clubs', async () => {
-            const clubs = await client.clubs.list({ itemsPerPage: 5 });
+            const response = await client.clubs.list({ itemsPerPage: 5 });
 
-            expect(Array.isArray(clubs)).toBe(true);
+            expect(Array.isArray(response.items)).toBe(true);
+            expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single club when clubs exist', async () => {
-            const clubs = await client.clubs.list({ itemsPerPage: 1 });
+            const response = await client.clubs.list({ itemsPerPage: 1 });
 
-            if (clubs.length > 0) {
-                const club = await client.clubs.get(clubs[0].id);
+            if (response.items.length > 0) {
+                const club = await client.clubs.get(response.items[0].id);
                 expect(club).toHaveProperty('id');
-                expect(club.id).toBe(clubs[0].id);
+                expect(club.id).toBe(response.items[0].id);
                 expect(club).toHaveProperty('teams');
                 expect(club).toHaveProperty('contactEmail');
             }
@@ -178,10 +186,10 @@ describeWithApi('API Integration Tests', () => {
 
     describe('Date parsing', () => {
         it('parses dates in match responses', async () => {
-            const matches = await client.matches.list({ itemsPerPage: 1 });
+            const response = await client.matches.list({ itemsPerPage: 1 });
 
-            if (matches.length > 0 && matches[0].scheduledFor) {
-                expect(matches[0].scheduledFor).toBeInstanceOf(Date);
+            if (response.items.length > 0 && response.items[0].scheduledFor) {
+                expect(response.items[0].scheduledFor).toBeInstanceOf(Date);
             }
         });
     });
