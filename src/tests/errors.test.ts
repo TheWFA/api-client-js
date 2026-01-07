@@ -157,6 +157,8 @@ describe('httpResponseToAPIError', () => {
                 json: async () => {
                     throw new Error('Invalid JSON');
                 },
+                clone: () => res,
+                text: async () => 'Invalid JSON',
             } as unknown as Response;
             const error = await httpResponseToAPIError(res);
 

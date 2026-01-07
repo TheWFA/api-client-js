@@ -1,6 +1,6 @@
 import { MatchDayCourt } from './locations';
 import { MatchDayMatchEvent } from './match-events';
-import { MatchDayPersonPartial } from './person';
+import { MatchDayPerson } from './person';
 import { MatchDaySeasonPartial } from './season';
 import { MatchDayTeamPartial } from './team';
 
@@ -32,10 +32,10 @@ export type MatchDayMatchTimes = {
 };
 
 export type MatchDayMatchOfficials = {
-    referee?: MatchDayPersonPartial;
-    assistant1?: MatchDayPersonPartial;
-    assistant2?: MatchDayPersonPartial;
-    fourthOfficial?: MatchDayPersonPartial;
+    referee?: MatchDayPerson;
+    assistant1?: MatchDayPerson;
+    assistant2?: MatchDayPerson;
+    fourthOfficial?: MatchDayPerson;
 };
 
 export type MatchDayMatchGroup = {
@@ -76,7 +76,7 @@ export enum MatchDayPlayerPostition {
 }
 
 export type MatchDayMatchPlayer = {
-    person: MatchDayPersonPartial;
+    person: MatchDayPerson;
     number: number;
     position: MatchDayPlayerPostition | null;
     captain: boolean;

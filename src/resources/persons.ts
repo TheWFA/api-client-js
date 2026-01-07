@@ -1,14 +1,82 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { MatchDayPerson, MatchDayPersonPartial, MatchDayPersonQuery } from '../types/person';
+import {
+    MatchDayPerson,
+    MatchDayPersonAppearance,
+    MatchDayPersonAppearancesQuery,
+    MatchDayPersonQuery,
+    MatchDayPersonRegistration,
+    MatchDayPersonRegistrationQuery,
+    MatchDayPersonStatsAssist,
+    MatchDayPersonStatsCard,
+    MatchDayPersonStatsGoal,
+    MatchDayPersonStatsSummary,
+    MatchDayPersonStatsSummaryQuery,
+    MatchDayPlayerCardsQuery,
+    MatchDayPlayerStatsQuery,
+} from '../types/person';
 import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
-export class PersonsResource extends APIResource {
+export class PersonsStatsResource extends APIResource {
     constructor(client: MatchDayClient) {
         super(client, '/persons');
+    }
+
+    async summary(id: string, query: MatchDayPersonStatsSummaryQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<MatchDayPersonStatsSummary>(
+            this.basePath + '/' + id + '/stats/summary?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async goals(id: string, query: MatchDayPlayerStatsQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPersonStatsGoal>>(
+            this.basePath + '/' + id + '/stats/goals?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async assists(id: string, query: MatchDayPlayerStatsQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPersonStatsAssist>>(
+            this.basePath + '/' + id + '/stats/assists?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async cards(id: string, query: MatchDayPlayerCardsQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPersonStatsCard>>(
+            this.basePath + '/' + id + '/stats/cards?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+}
+
+export class PersonsResource extends APIResource {
+    public readonly stats: PersonsStatsResource;
+
+    constructor(client: MatchDayClient) {
+        super(client, '/persons');
+
+        this.stats = new PersonsStatsResource(client);
     }
 
     /**
@@ -53,8 +121,30 @@ export class PersonsResource extends APIResource {
     async list(query: MatchDayPersonQuery) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<ListResponse<MatchDayPersonPartial>>(
+        return this.client.makeRequest<ListResponse<MatchDayPerson>>(
             this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async registrations(id: string, query: MatchDayPersonRegistrationQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPersonRegistration>>(
+            this.basePath + '/' + id + '/registrations/?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async appearances(id: string, query: MatchDayPersonAppearancesQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPersonAppearance>>(
+            this.basePath + '/' + id + '/appearances/?' + queryString,
             {
                 method: 'GET',
             },

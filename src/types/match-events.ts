@@ -1,5 +1,5 @@
 import { MatchDayMatchStatus } from './match';
-import { MatchDayPersonPartial } from './person';
+import { MatchDayPerson } from './person';
 
 export enum MatchDayMatchEventType {
     Goal = 'goal',
@@ -21,20 +21,20 @@ export type MatchDayBaseMatchEvent = {
 };
 
 export type MatchDayGoalMatchEvent = {
-    player: MatchDayPersonPartial;
+    player: MatchDayPerson;
     teamId: string;
     penalty: boolean;
     goaltype: MatchDayGoalType;
 };
 
 export type MatchDayCardMatchEvent = {
-    player: MatchDayPersonPartial;
+    player: MatchDayPerson;
     teamId: string;
 };
 
 export type MatchDaySubstitutionMatchEvent = {
-    playerOn: MatchDayPersonPartial;
-    playerOff: MatchDayPersonPartial;
+    playerOn: MatchDayPerson;
+    playerOff: MatchDayPerson;
     teamId: string;
 };
 

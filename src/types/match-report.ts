@@ -1,8 +1,8 @@
 import { MatchDayMatchPlayer } from './match';
-import { MatchDayPersonPartial } from './person';
+import { MatchDayPerson } from './person';
 
 export type MatchDayMatchPlayerSpeedTest = {
-    person: MatchDayPersonPartial;
+    person: MatchDayPerson;
     speedTest1: boolean | null;
     speedTest2: boolean | null;
     speedTest3: boolean | null;

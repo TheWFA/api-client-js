@@ -1,4 +1,4 @@
-import { MatchDayPerson, MatchDayPersonPartial } from './person';
+import { MatchDayPerson } from './person';
 
 export type MatchDayUserProfile = {
     id: string;
@@ -13,5 +13,5 @@ export type MatchDayUser = {
     image: string | null;
     createdAt: Date;
     email?: string;
-    persons: MatchDayPersonPartial[] | MatchDayPerson[];
+    persons?: MatchDayPerson[];
 };

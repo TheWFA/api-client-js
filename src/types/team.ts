@@ -1,6 +1,6 @@
 import { MatchDayClubPartial } from './clubs';
 import { MatchDayCompetitionPartial } from './competitions';
-import { MatchDayPersonPartial } from './person';
+import { MatchDayPerson } from './person';
 
 export type MatchDayTeamPartial = {
     id: string;
@@ -32,7 +32,7 @@ export type MatchDayClubHistory = {
 };
 
 export type MatchDayTeamPlayerRegistration = {
-    player: MatchDayPersonPartial;
+    player: MatchDayPerson;
     competition: MatchDayCompetitionPartial;
     registeredAt: Date;
     number: number;
@@ -46,7 +46,7 @@ export enum MatchDayTeamStaffRole {
 }
 
 export type MatchDayTeamStaffRegistration = {
-    person: MatchDayPersonPartial;
+    person: MatchDayPerson;
     competition: MatchDayCompetitionPartial;
     registeredAt: Date;
     role: MatchDayTeamStaffRole | null;

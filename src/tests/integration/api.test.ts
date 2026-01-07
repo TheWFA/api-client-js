@@ -117,6 +117,19 @@ describeWithApi('API Integration Tests', () => {
     });
 
     describe('Persons', () => {
+        let personId: string | undefined;
+
+        beforeAll(async () => {
+            const response = await client.persons.list({
+                query: 'Test',
+                itemsPerPage: 1,
+                type: [],
+            });
+            if (response.items.length > 0) {
+                personId = response.items[0].id;
+            }
+        });
+
         it('lists persons', async () => {
             const response = await client.persons.list({ itemsPerPage: 5, type: [] });
 
@@ -125,12 +138,66 @@ describeWithApi('API Integration Tests', () => {
         });
 
         it('gets a single person when persons exist', async () => {
-            const response = await client.persons.list({ itemsPerPage: 1, type: [] });
-
-            if (response.items.length > 0) {
-                const person = await client.persons.get(response.items[0].id);
+            if (personId) {
+                const person = await client.persons.get(personId);
                 expect(person).toHaveProperty('id');
-                expect(person.id).toBe(response.items[0].id);
+                expect(person.id).toBe(personId);
+            }
+        });
+
+        it('lists person registrations when persons exist', async () => {
+            if (personId) {
+                const registrations = await client.persons.registrations(personId, {
+                    itemsPerPage: 5,
+                });
+                expect(Array.isArray(registrations.items)).toBe(true);
+                expect(registrations.pagination).toHaveProperty('totalItems');
+            }
+        });
+
+        it('lists person appearances when persons exist', async () => {
+            if (personId) {
+                const appearances = await client.persons.appearances(personId, {
+                    itemsPerPage: 5,
+                });
+                expect(Array.isArray(appearances.items)).toBe(true);
+                expect(appearances.pagination).toHaveProperty('totalItems');
+            }
+        });
+
+        it('gets person stats summary when persons exist', async () => {
+            if (personId) {
+                const stats = await client.persons.stats.summary(personId, {});
+                expect(stats).toHaveProperty('goals');
+                expect(stats).toHaveProperty('assists');
+                expect(stats).toHaveProperty('yellowCards');
+                expect(stats).toHaveProperty('redCards');
+                expect(stats).toHaveProperty('appearances');
+                expect(stats).toHaveProperty('starts');
+            }
+        });
+
+        it('lists person goals when persons exist', async () => {
+            if (personId) {
+                const goals = await client.persons.stats.goals(personId, {});
+                expect(Array.isArray(goals.items)).toBe(true);
+                expect(goals.pagination).toHaveProperty('totalItems');
+            }
+        });
+
+        it('lists person assists when persons exist', async () => {
+            if (personId) {
+                const assists = await client.persons.stats.assists(personId, {});
+                expect(Array.isArray(assists.items)).toBe(true);
+                expect(assists.pagination).toHaveProperty('totalItems');
+            }
+        });
+
+        it('lists person cards when persons exist', async () => {
+            if (personId) {
+                const cards = await client.persons.stats.cards(personId, {});
+                expect(Array.isArray(cards.items)).toBe(true);
+                expect(cards.pagination).toHaveProperty('totalItems');
             }
         });
     });
