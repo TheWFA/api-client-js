@@ -1,3 +1,5 @@
+import { MatchDayBaseListQuery } from './api';
+import { MatchDayPerson } from './person';
 import { MatchDaySeasonPartial } from './season';
 import { MatchDayTeamPartial } from './team';
 
@@ -12,13 +14,27 @@ export type MatchDayCompetitionPartial = {
     name: string;
     type: MatchDayCompetitionType;
     activeSeason: MatchDaySeasonPartial;
-    logo?: string;
+    logo: null | string;
+};
+
+export type MatchDayCompetitionGroupPartial = {
+    id: string;
+    name: string;
+    shortName: string;
+    logo: null | string;
+};
+
+export type MatchDayCompetitionHistory = {
+    id: string;
+    name: string | null;
+    logo: string | null;
+    created_at: Date;
 };
 
 export type MatchDayCompetition = {
-    seasons: MatchDaySeasonPartial[];
-    activeSeasonId: string;
-    history: { name: string | null; logo: string | null; created_at: Date }[];
+    seasons: (MatchDaySeasonPartial & { isActiveSeason: boolean })[];
+    history: MatchDayCompetitionHistory[];
+    group: MatchDayCompetitionGroupPartial;
 } & Omit<MatchDayCompetitionPartial, 'activeSeason'>;
 
 export type MatchDayCompetitionTableRow = {
@@ -31,5 +47,84 @@ export type MatchDayCompetitionTableRow = {
     goalsFor: number;
     goalsAgainst: number;
     goalDifference: number;
+    points: number;
+};
+
+export type MatchDayCompetitionStatsSummaryQuery = MatchDayBaseListQuery & {
+    from?: Date;
+    to?: Date;
+    season?: string[];
+    matchGroup?: string[];
+};
+
+export type MatchDayCompetitionStatsSummary = {
+    matches: number;
+    goals: number;
+    ownGoals: number;
+    goalsPerMatch: number;
+    yellowCards: number;
+    redCards: number;
+    cleanSheets: number;
+    teams: number;
+};
+
+export type MatchDayCompetitionPlayersStatsQuery = MatchDayBaseListQuery & {
+    from?: Date;
+    to?: Date;
+    season?: string[];
+    matchGroup?: string[];
+    team?: string[];
+    orderBy?:
+        | 'name'
+        | 'goals'
+        | 'assists'
+        | 'contributions'
+        | 'yellowCards'
+        | 'redCards'
+        | 'appearances';
+};
+
+export type MatchDayCompetitionPlayersStats = {
+    player: MatchDayPerson;
+    team: MatchDayTeamPartial;
+    goals: number;
+    assists: number;
+    contributions: number;
+    yellowCards: number;
+    redCards: number;
+    appearances: number;
+};
+
+export type MatchDayCompetitionTeamsStatsQuery = MatchDayBaseListQuery & {
+    from?: Date;
+    to?: Date;
+    season?: string[];
+    matchGroup?: string[];
+    orderBy?:
+        | 'name'
+        | 'goalsFor'
+        | 'goalsAgainst'
+        | 'goalDifference'
+        | 'cleanSheets'
+        | 'yellowCards'
+        | 'redCards'
+        | 'played'
+        | 'wins'
+        | 'points';
+};
+
+export type MatchDayCompetitionTeamsStats = {
+    team: MatchDayTeamPartial;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    goalsFor: number;
+    goalsAgainst: number;
+    goalDifference: number;
+    goalsPerMatch: number;
+    cleanSheets: number;
+    yellowCards: number;
+    redCards: number;
     points: number;
 };

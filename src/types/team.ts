@@ -82,3 +82,11 @@ export type TeamStaffQuery = MatchDayBaseListQuery & {
     competition?: string[];
     role?: ('head-coach' | 'assistant-coach' | 'assistant' | 'mechanic')[];
 };
+
+export type TeamStatsSummaryQuery = MatchDayBaseListQuery & {
+    from?: Date;
+    to?: Date;
+    season?: string[];
+    competition?: string[];
+    matchGroup?: string[];
+};
