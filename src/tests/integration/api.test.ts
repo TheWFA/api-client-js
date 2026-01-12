@@ -61,14 +61,26 @@ describeWithApi('API Integration Tests', () => {
 
     describe('Teams', () => {
         it('lists teams', async () => {
-            const response = await client.teams.list({ itemsPerPage: 5 });
+            const seasons = await client.seasons.list({ itemsPerPage: 1 });
+            const competitions = await client.competitions.list({ itemsPerPage: 1 });
+            const response = await client.teams.list({
+                itemsPerPage: 5,
+                season: [seasons.items[0].id],
+                competition: [competitions.items[0].id],
+            });
 
             expect(Array.isArray(response.items)).toBe(true);
             expect(response.pagination).toHaveProperty('totalItems');
         });
 
         it('gets a single team when teams exist', async () => {
-            const response = await client.teams.list({ itemsPerPage: 1 });
+            const seasons = await client.seasons.list({ itemsPerPage: 1 });
+            const competitions = await client.competitions.list({ itemsPerPage: 1 });
+            const response = await client.teams.list({
+                itemsPerPage: 1,
+                season: [seasons.items[0].id],
+                competition: [competitions.items[0].id],
+            });
 
             if (response.items.length > 0) {
                 const team = await client.teams.get(response.items[0].id);

@@ -46,11 +46,19 @@ describe('TeamsResource', () => {
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
-            const result = await client.teams.list({ itemsPerPage: 10, page: 1 });
-
-            expect(makeRequestSpy).toHaveBeenCalledWith('/teams?itemsPerPage=10&page=1', {
-                method: 'GET',
+            const result = await client.teams.list({
+                itemsPerPage: 10,
+                page: 1,
+                season: ['2025'],
+                competition: ['1'],
             });
+
+            expect(makeRequestSpy).toHaveBeenCalledWith(
+                '/teams?itemsPerPage=10&page=1&season%5B0%5D=2025&competition%5B0%5D=1',
+                {
+                    method: 'GET',
+                },
+            );
             expect(result.items).toEqual(mockTeams);
             expect(result.pagination).toEqual(mockPagination);
         });
@@ -62,7 +70,12 @@ describe('TeamsResource', () => {
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
-            await client.teams.list({ itemsPerPage: 50, page: 3 });
+            await client.teams.list({
+                itemsPerPage: 50,
+                page: 3,
+                season: ['2025'],
+                competition: ['1'],
+            });
 
             const path = makeRequestSpy.mock.calls[0][0] as string;
             expect(path).toContain('itemsPerPage=50');
@@ -76,7 +89,11 @@ describe('TeamsResource', () => {
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
-            const result = await client.teams.list({ itemsPerPage: 10 });
+            const result = await client.teams.list({
+                itemsPerPage: 10,
+                season: ['2025'],
+                competition: ['1'],
+            });
 
             expect(result.items).toEqual([]);
             expect(result.pagination.totalItems).toBe(0);
@@ -99,7 +116,7 @@ describe('TeamsResource', () => {
         });
     });
 
-    describe('listPlayers', () => {
+    describe('players', () => {
         it('calls makeRequest with correct path including team and season IDs', async () => {
             const mockPlayers = [
                 { id: 'player-1', name: 'Player One', number: 10 },
@@ -107,35 +124,20 @@ describe('TeamsResource', () => {
             ];
             makeRequestSpy.mockResolvedValueOnce(mockPlayers);
 
-            const result = await client.teams.listPlayers('team-123', 'season-2024', {
+            const result = await client.teams.players('team-123', {
+                season: ['2024'],
                 itemsPerPage: 25,
             });
 
             expect(makeRequestSpy).toHaveBeenCalledWith(
-                '/teams/team-123/season-2024/players?itemsPerPage=25',
+                '/teams/team-123/stats/players?season%5B0%5D=2024&itemsPerPage=25',
                 { method: 'GET' },
             );
             expect(result).toEqual(mockPlayers);
         });
-
-        it('handles pagination for players list', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
-
-            await client.teams.listPlayers('team-123', 'season-2024', {
-                itemsPerPage: 10,
-                page: 3,
-            });
-
-            const path = makeRequestSpy.mock.calls[0][0] as string;
-            expect(path).toContain('team-123');
-            expect(path).toContain('season-2024');
-            expect(path).toContain('players');
-            expect(path).toContain('itemsPerPage=10');
-            expect(path).toContain('page=3');
-        });
     });
 
-    describe('listStaff', () => {
+    describe('staff', () => {
         it('calls makeRequest with correct path including team and season IDs', async () => {
             const mockStaff = [
                 { id: 'staff-1', name: 'Coach One', role: 'Head Coach' },
@@ -143,31 +145,16 @@ describe('TeamsResource', () => {
             ];
             makeRequestSpy.mockResolvedValueOnce(mockStaff);
 
-            const result = await client.teams.listStaff('team-123', 'season-2024', {
+            const result = await client.teams.staff('team-123', {
+                season: ['2024'],
                 itemsPerPage: 10,
             });
 
             expect(makeRequestSpy).toHaveBeenCalledWith(
-                '/teams/team-123/season-2024/staff?itemsPerPage=10',
+                '/teams/team-123/staff?season%5B0%5D=2024&itemsPerPage=10',
                 { method: 'GET' },
             );
             expect(result).toEqual(mockStaff);
-        });
-
-        it('handles pagination for staff list', async () => {
-            makeRequestSpy.mockResolvedValueOnce([]);
-
-            await client.teams.listStaff('team-123', 'season-2024', {
-                itemsPerPage: 5,
-                page: 2,
-            });
-
-            const path = makeRequestSpy.mock.calls[0][0] as string;
-            expect(path).toContain('team-123');
-            expect(path).toContain('season-2024');
-            expect(path).toContain('staff');
-            expect(path).toContain('itemsPerPage=5');
-            expect(path).toContain('page=2');
         });
     });
 });

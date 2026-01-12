@@ -101,8 +101,35 @@ describe('CompetitionsResource', () => {
         });
     });
 
-    describe('listTeams', () => {
-        it('calls makeRequest with correct path including competition and season IDs', async () => {
+    describe('players', () => {
+        it('calls makeRequest with correct path and query string', async () => {
+            const mockPlayers = [
+                { id: 'player-1', name: 'Player A' },
+                { id: 'player-2', name: 'Player B' },
+            ];
+            const mockResponse: ListResponse<(typeof mockPlayers)[0]> = {
+                items: mockPlayers,
+                pagination: mockPagination,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
+
+            const result = await client.competitions.players('comp-123', {
+                season: ['2025'],
+            });
+
+            expect(makeRequestSpy).toHaveBeenCalledWith(
+                '/competitions/comp-123/stats/players?season%5B0%5D=2025',
+                {
+                    method: 'GET',
+                },
+            );
+            expect(result.items).toEqual(mockPlayers);
+            expect(result.pagination).toEqual(mockPagination);
+        });
+    });
+
+    describe('teams', () => {
+        it('calls makeRequest with correct path and query string', async () => {
             const mockTeams = [
                 { id: 'team-1', name: 'Team A' },
                 { id: 'team-2', name: 'Team B' },
@@ -113,79 +140,16 @@ describe('CompetitionsResource', () => {
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
-            const result = await client.competitions.listTeams('comp-123', 'season-2024', {
-                itemsPerPage: 20,
-            });
+            const result = await client.competitions.teams('comp-123', { season: ['2025'] });
 
             expect(makeRequestSpy).toHaveBeenCalledWith(
-                '/competitions/comp-123/season-2024/teams?itemsPerPage=20',
-                { method: 'GET' },
+                '/competitions/comp-123/stats/teams?season%5B0%5D=2025',
+                {
+                    method: 'GET',
+                },
             );
             expect(result.items).toEqual(mockTeams);
             expect(result.pagination).toEqual(mockPagination);
-        });
-
-        it('handles pagination for teams list', async () => {
-            const mockResponse: ListResponse<unknown> = {
-                items: [],
-                pagination: { ...mockPagination, currentPage: 4, itemsPerPage: 10 },
-            };
-            makeRequestSpy.mockResolvedValueOnce(mockResponse);
-
-            await client.competitions.listTeams('comp-123', 'season-2024', {
-                itemsPerPage: 10,
-                page: 4,
-            });
-
-            const path = makeRequestSpy.mock.calls[0][0] as string;
-            expect(path).toContain('comp-123');
-            expect(path).toContain('season-2024');
-            expect(path).toContain('teams');
-            expect(path).toContain('itemsPerPage=10');
-            expect(path).toContain('page=4');
-        });
-    });
-
-    describe('table', () => {
-        it('calls makeRequest with correct path for table endpoint', async () => {
-            const mockTable = [
-                { position: 1, team: 'Team A', points: 30, played: 10 },
-                { position: 2, team: 'Team B', points: 27, played: 10 },
-                { position: 3, team: 'Team C', points: 24, played: 10 },
-            ];
-            makeRequestSpy.mockResolvedValueOnce(mockTable);
-
-            const result = await client.competitions.table('comp-123', 'season-2024');
-
-            expect(makeRequestSpy).toHaveBeenCalledWith(
-                '/competitions/comp-123/season-2024/table',
-                { method: 'GET' },
-            );
-            expect(result).toEqual(mockTable);
-        });
-
-        it('returns correct standings data structure', async () => {
-            const mockTable = [
-                {
-                    position: 1,
-                    team: { id: 'team-1', name: 'Team A' },
-                    played: 10,
-                    won: 8,
-                    drawn: 1,
-                    lost: 1,
-                    goalsFor: 25,
-                    goalsAgainst: 8,
-                    goalDifference: 17,
-                    points: 25,
-                },
-            ];
-            makeRequestSpy.mockResolvedValueOnce(mockTable);
-
-            const result = await client.competitions.table('comp-123', 'season-2024');
-
-            expect(result[0]).toHaveProperty('position');
-            expect(result[0]).toHaveProperty('team');
-            expect(result[0]).toHaveProperty('points');
         });
     });
 });

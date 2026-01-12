@@ -30,13 +30,7 @@ export const MatchDayScopes = {
     person_read: {
         name: 'Person profile',
         description:
-            'Access to your person account details such as your name, biography and associated public information',
-        hidden: false,
-    },
-    person_teams_read: {
-        name: 'Team associations',
-        description:
-            'Access to the teams you currently or previously played for or were part of as staff',
+            'Access to your person details such as your full name, associated player data and/or associated team staff.',
         hidden: false,
     },
 } as const satisfies Record<string, MatchDayOAuth2ScopeDescription>;
