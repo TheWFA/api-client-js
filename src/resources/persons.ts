@@ -25,6 +25,16 @@ export class PersonsStatsResource extends APIResource {
         super(client, '/persons');
     }
 
+    /**
+     * Retrieves a summary of a person's statistics.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPersonStatsSummaryQuery} query - Query parameters to filter the statistics summary.
+     * @returns {Promise<MatchDayPersonStatsSummary>} A promise that resolves to the person's statistics summary.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async summary(id: string, query: MatchDayPersonStatsSummaryQuery) {
         const queryString = qs.stringify(query);
 
@@ -36,6 +46,16 @@ export class PersonsStatsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of goals scored by a person.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPlayerStatsQuery} query - Query parameters to filter the list of goals.
+     * @returns {Promise<ListResponse<MatchDayPersonStatsGoal>>} A promise that resolves to a list of goals.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async goals(id: string, query: MatchDayPlayerStatsQuery) {
         const queryString = qs.stringify(query);
 
@@ -47,6 +67,16 @@ export class PersonsStatsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of assists made by a person.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPlayerStatsQuery} query - Query parameters to filter the list of assists.
+     * @returns {Promise<ListResponse<MatchDayPersonStatsAssist>>} A promise that resolves to a list of assists.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async assists(id: string, query: MatchDayPlayerStatsQuery) {
         const queryString = qs.stringify(query);
 
@@ -58,6 +88,16 @@ export class PersonsStatsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of cards received by a person.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPlayerCardsQuery} query - Query parameters to filter the list of cards.
+     * @returns {Promise<ListResponse<MatchDayPersonStatsCard>>} A promise that resolves to a list of cards.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async cards(id: string, query: MatchDayPlayerCardsQuery) {
         const queryString = qs.stringify(query);
 
@@ -129,6 +169,16 @@ export class PersonsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of registrations for a person.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPersonRegistrationQuery} query - Query parameters to filter the list of registrations.
+     * @returns {Promise<ListResponse<MatchDayPersonRegistration>>} A promise that resolves to a list of registrations.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async registrations(id: string, query: MatchDayPersonRegistrationQuery) {
         const queryString = qs.stringify(query);
 
@@ -140,6 +190,16 @@ export class PersonsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of appearances for a person.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the person.
+     * @param {MatchDayPersonAppearancesQuery} query - Query parameters to filter the list of appearances.
+     * @returns {Promise<ListResponse<MatchDayPersonAppearance>>} A promise that resolves to a list of appearances.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async appearances(id: string, query: MatchDayPersonAppearancesQuery) {
         const queryString = qs.stringify(query);
 

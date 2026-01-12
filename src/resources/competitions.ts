@@ -22,6 +22,16 @@ export class CompetitionsStatsResource extends APIResource {
         super(client, '/competitions');
     }
 
+    /**
+     * Retrieves a summary of statistics for a specific competition.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the competition.
+     * @param {MatchDayCompetitionStatsSummaryQuery} query - Query parameters to filter the stats summary.
+     * @returns {Promise<MatchDayCompetitionStatsSummary>} A promise that resolves to the competition's stats summary.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async summary(id: string, query: MatchDayCompetitionStatsSummaryQuery) {
         const queryString = qs.stringify(query);
 
@@ -39,6 +49,15 @@ export class CompetitionsGroupsResource extends APIResource {
         super(client, '/competition-groups');
     }
 
+    /**
+     * Retrieves a paginated list of competition groups.
+     *
+     * @async
+     * @function
+     * @param {MatchDayCompetitionQuery} query - Query parameters to filter the list of competition groups.
+     * @returns {Promise<ListResponse<MatchDayCompetitionGroup>>} A promise that resolves to a paginated list of competition groups.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async list(query: MatchDayCompetitionQuery) {
         const queryString = qs.stringify(query);
 
@@ -50,6 +69,15 @@ export class CompetitionsGroupsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a specific competition group by its ID.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the competition group.
+     * @returns {Promise<MatchDayCompetitionGroup>} A promise that resolves to the competition group.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async get(id: string) {
         return this.client.makeRequest<MatchDayCompetitionGroup>(this.basePath + '/' + id, {
             method: 'GET',
@@ -119,6 +147,16 @@ export class CompetitionsResource extends APIResource {
         });
     }
 
+    /**
+     * Retrieves a list of player statistics for a specific competition.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the competition.
+     * @param {MatchDayCompetitionPlayersStatsQuery} query - Query parameters to filter the player statistics.
+     * @returns {Promise<ListResponse<MatchDayCompetitionPlayersStats>>} A promise that resolves to a list of player statistics.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async players(id: string, query: MatchDayCompetitionPlayersStatsQuery) {
         const queryString = qs.stringify(query);
 
@@ -130,6 +168,16 @@ export class CompetitionsResource extends APIResource {
         );
     }
 
+    /**
+     * Retrieves a list of team statistics for a specific competition.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the competition.
+     * @param {MatchDayCompetitionTeamsStatsQuery} query - Query parameters to filter the team statistics.
+     * @returns {Promise<ListResponse<MatchDayCompetitionTeamsStats>>} A promise that resolves to a list of team statistics.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async teams(id: string, query: MatchDayCompetitionTeamsStatsQuery) {
         const queryString = qs.stringify(query);
 

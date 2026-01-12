@@ -20,6 +20,16 @@ export class TeamsStatsResource extends APIResource {
         super(client, '/teams');
     }
 
+    /**
+     * Retrieves a summary of a team's statistics.
+     *
+     * @async
+     * @function
+     * @param {string} id - The unique identifier of the team.
+     * @param {TeamStatsSummaryQuery} query - Query parameters to filter the statistics summary.
+     * @returns {Promise<TeamStatsSummaryQuery>} A promise that resolves to the team's statistics summary.
+     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     */
     async summary(id: string, query: TeamStatsSummaryQuery) {
         const queryString = qs.stringify(query);
 
