@@ -11,7 +11,7 @@ export type MatchDayLocation = {
     id: string;
     name: string;
     addressFirstLine: string;
-    addressSecondLine?: string | null;
+    addressSecondLine: string | null;
     postcode: string;
     county: string;
     country: string;

@@ -1,12 +1,13 @@
 import qs from 'qs';
 
 import { MatchDayClient } from '../client';
-import { MatchDayBaseListQuery } from '../types/api';
 import {
     MatchDayCompetition,
+    MatchDayCompetitionGroup,
     MatchDayCompetitionPartial,
     MatchDayCompetitionPlayersStats,
     MatchDayCompetitionPlayersStatsQuery,
+    MatchDayCompetitionQuery,
     MatchDayCompetitionStatsSummary,
     MatchDayCompetitionStatsSummaryQuery,
     MatchDayCompetitionTeamsStats,
@@ -33,12 +34,37 @@ export class CompetitionsStatsResource extends APIResource {
     }
 }
 
+export class CompetitionsGroupsResource extends APIResource {
+    constructor(client: MatchDayClient) {
+        super(client, '/competition-groups');
+    }
+
+    async list(query: MatchDayCompetitionQuery) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayCompetitionGroup>>(
+            this.basePath + '?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    async get(id: string) {
+        return this.client.makeRequest<MatchDayCompetitionGroup>(this.basePath + '/' + id, {
+            method: 'GET',
+        });
+    }
+}
+
 export class CompetitionsResource extends APIResource {
     public readonly stats: CompetitionsStatsResource;
+    public readonly groups: CompetitionsGroupsResource;
 
     constructor(client: MatchDayClient) {
         super(client, '/competitions');
         this.stats = new CompetitionsStatsResource(client);
+        this.groups = new CompetitionsGroupsResource(client);
     }
 
     /**
@@ -49,7 +75,7 @@ export class CompetitionsResource extends APIResource {
      *
      * @async
      * @function
-     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
+     * @param {MatchDayCompetitionQuery} query - Query parameters such as pagination, filters, or sorting.
      * @returns A promise that resolves to a {@link ListResponse} containing competitions and pagination metadata.
      *
      * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
@@ -59,7 +85,7 @@ export class CompetitionsResource extends APIResource {
      * console.log(response.items[0].name);
      * console.log(response.pagination.totalItems);
      */
-    async list(query: MatchDayBaseListQuery) {
+    async list(query: MatchDayCompetitionQuery) {
         const queryString = qs.stringify(query);
 
         return this.client.makeRequest<ListResponse<MatchDayCompetitionPartial>>(

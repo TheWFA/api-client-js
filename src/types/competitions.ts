@@ -9,11 +9,16 @@ export enum MatchDayCompetitionType {
     Friendly = 'friendly',
 }
 
+export type MatchDayCompetitionQuery = MatchDayBaseListQuery & {
+    group?: string[];
+};
+
 export type MatchDayCompetitionPartial = {
     id: string;
     name: string;
     type: MatchDayCompetitionType;
     activeSeason: MatchDaySeasonPartial;
+    group: MatchDayCompetitionGroupPartial | null;
     logo: null | string;
 };
 
@@ -34,7 +39,7 @@ export type MatchDayCompetitionHistory = {
 export type MatchDayCompetition = {
     seasons: (MatchDaySeasonPartial & { isActiveSeason: boolean })[];
     history: MatchDayCompetitionHistory[];
-    group: MatchDayCompetitionGroupPartial;
+    group: MatchDayCompetitionGroupPartial | null;
 } & Omit<MatchDayCompetitionPartial, 'activeSeason'>;
 
 export type MatchDayCompetitionTableRow = {
@@ -127,4 +132,12 @@ export type MatchDayCompetitionTeamsStats = {
     yellowCards: number;
     redCards: number;
     points: number;
+};
+
+export type MatchDayCompetitionGroup = {
+    id: string;
+    name: string;
+    shortName: string;
+    logo: null | string;
+    competitions: MatchDayCompetitionPartial[];
 };

@@ -32,10 +32,10 @@ export type MatchDayMatchTimes = {
 };
 
 export type MatchDayMatchOfficials = {
-    referee?: MatchDayPerson;
-    assistant1?: MatchDayPerson;
-    assistant2?: MatchDayPerson;
-    fourthOfficial?: MatchDayPerson;
+    referee: MatchDayPerson | null;
+    assistant1: MatchDayPerson | null;
+    assistant2: MatchDayPerson | null;
+    fourthOfficial: MatchDayPerson | null;
 };
 
 export type MatchDayMatchGroup = {
@@ -58,7 +58,7 @@ export type MatchDayMatch = {
     competition: {
         id: string;
         name: string;
-        logo?: string;
+        logo: string | null;
     };
     season: MatchDaySeasonPartial;
     court?: MatchDayCourt;
