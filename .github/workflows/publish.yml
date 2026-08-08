@@ -46,5 +46,8 @@ jobs:
                   version: npm run version
                   publish: npm run release
                   createGithubReleases: true
+                  # commitlint requires a conventional-commit message; the action's
+                  # default "Version Packages" fails our own commit-msg hook.
+                  commit: 'chore: version packages'
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
