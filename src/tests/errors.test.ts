@@ -111,46 +111,74 @@ describe('httpResponseToAPIError', () => {
     });
 
     describe('unknown status codes', () => {
-        it('returns generic MatchDayAPIError for 500 Internal Server Error', async () => {
+        it('returns generic MatchDayAPIError for 500 Internal Server Error, with status and body', async () => {
             const res = createMockResponse(500, { message: 'Server error' }, false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayAPIError);
-            expect(error?.message).toBe('An unknown error occurred');
+            expect(error?.status).toBe(500);
+            expect(error?.message).toContain('500');
+            expect(error?.message).toContain('Server error');
         });
 
-        it('returns generic MatchDayAPIError for 502 Bad Gateway', async () => {
+        it('returns generic MatchDayAPIError for 502 Bad Gateway, with status and body', async () => {
             const res = createMockResponse(502, { message: 'Bad gateway' }, false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayAPIError);
-            expect(error?.message).toBe('An unknown error occurred');
+            expect(error?.status).toBe(502);
+            expect(error?.message).toContain('502');
+            expect(error?.message).toContain('Bad gateway');
         });
 
-        it('returns generic MatchDayAPIError for 503 Service Unavailable', async () => {
+        it('returns generic MatchDayAPIError for 503 Service Unavailable, with status and body', async () => {
             const res = createMockResponse(503, { message: 'Service unavailable' }, false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayAPIError);
-            expect(error?.message).toBe('An unknown error occurred');
+            expect(error?.status).toBe(503);
+            expect(error?.message).toContain('503');
+            expect(error?.message).toContain('Service unavailable');
         });
     });
 
     describe('JSON parse errors', () => {
-        it('returns generic error when JSON parsing fails', async () => {
+        it('returns a detailed error when the body is not JSON', async () => {
             const res = {
                 ok: false,
                 status: 400,
-                json: async () => {
-                    throw new Error('Invalid JSON');
-                },
-                clone: () => res,
-                text: async () => 'Invalid JSON',
+                text: async () => 'Not JSON at all',
             } as unknown as Response;
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayAPIError);
-            expect(error?.message).toBe('Failed to parse error');
+            expect(error?.status).toBe(400);
+            expect(error?.message).toContain('400');
+            expect(error?.message).toContain('Not JSON at all');
+        });
+
+        it('returns a detailed error when the body is JSON but missing error.message', async () => {
+            const res = createMockResponse(400, { unexpected: 'shape' }, false);
+            const error = await httpResponseToAPIError(res);
+
+            expect(error).toBeInstanceOf(MatchDayAPIError);
+            expect(error?.status).toBe(400);
+            expect(error?.message).toContain('400');
+            expect(error?.message).toContain('unexpected');
+        });
+
+        it('returns a generic error when reading the body itself fails', async () => {
+            const res = {
+                ok: false,
+                status: 500,
+                text: async () => {
+                    throw new Error('stream error');
+                },
+            } as unknown as Response;
+            const error = await httpResponseToAPIError(res);
+
+            expect(error).toBeInstanceOf(MatchDayAPIError);
+            expect(error?.status).toBe(500);
         });
     });
 });
