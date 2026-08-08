@@ -12,7 +12,7 @@ A TypeScript/JavaScript client for accessing **Wheelchair Football Association (
 
 - ✅ TypeScript types for every request and response
 - ✅ ESM & CommonJS builds
-- ✅ API key auth (`Authorization: ApiKey <key>`)
+- ✅ API key auth (`x-api-key` header)
 - ✅ Full coverage of matches, teams, clubs, competitions, organisations, seasons, persons, accreditations, suspensions, ties, kits, search and history
 - ✅ Works in Node 18+ and modern browsers
 
@@ -41,7 +41,7 @@ bun add @thewfa/api-client
 Pass your API key to the client. It's sent as:
 
 ```
-Authorization: ApiKey <your_api_key>
+x-api-key: <your_api_key>
 ```
 
 > **Never commit API keys** to source control. Prefer environment variables.

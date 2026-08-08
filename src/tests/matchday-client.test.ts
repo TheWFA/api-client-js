@@ -143,7 +143,7 @@ describe('MatchDayClient', () => {
                 await client.makeRequest('/test');
 
                 const call = (global.fetch as jest.Mock).mock.calls[0];
-                expect(call[1].headers['Authorization']).toBe('ApiKey my-api-key');
+                expect(call[1].headers['x-api-key']).toBe('my-api-key');
             });
         });
 

@@ -75,7 +75,7 @@ export class MatchDayClient {
             throw new MatchDayAPIError('No authentication method set');
         }
 
-        defaultHeaders['Authorization'] = `ApiKey ${this.config.apiKey}`;
+        defaultHeaders['x-api-key'] = this.config.apiKey;
 
         const res = await fetch(
             this.config.baseURL + (this.config.version ?? defaultConfig.version!) + path,
