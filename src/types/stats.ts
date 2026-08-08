@@ -14,13 +14,7 @@ export type MatchDayStatsFilterQuery = {
 };
 
 export type MatchDayPlayerStatsOrderBy =
-    | 'name'
-    | 'appearances'
-    | 'goals'
-    | 'assists'
-    | 'contributions'
-    | 'yellowCards'
-    | 'redCards';
+    'name' | 'appearances' | 'goals' | 'assists' | 'contributions' | 'yellowCards' | 'redCards';
 
 export type MatchDayPlayerStatsQuery = MatchDayBaseListQuery &
     MatchDayStatsFilterQuery & {

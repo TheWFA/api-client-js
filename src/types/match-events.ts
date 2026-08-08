@@ -47,6 +47,4 @@ export type MatchDaySubstitutionMatchEvent = MatchDayBaseMatchEvent & {
 };
 
 export type MatchDayMatchEvent =
-    | MatchDayGoalMatchEvent
-    | MatchDayCardMatchEvent
-    | MatchDaySubstitutionMatchEvent;
+    MatchDayGoalMatchEvent | MatchDayCardMatchEvent | MatchDaySubstitutionMatchEvent;
