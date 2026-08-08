@@ -1,20 +1,26 @@
-name: Publish to npm on Release
+name: Release
 
 on:
-    release:
-        types: [published]
+    push:
+        branches:
+            - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
-    contents: read
+    contents: write
+    pull-requests: write
     id-token: write # required for npm provenance (OIDC)
 
 jobs:
-    publish:
+    release:
         runs-on: ubuntu-latest
         environment: Default
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Use Node.js
               uses: actions/setup-node@v4
@@ -28,25 +34,15 @@ jobs:
             - name: Run tests
               env:
                   API_KEY: ${{ secrets.API_KEY }}
-                  CLIENT_ID: ${{ secrets.CLIENT_ID }}
-                  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
                   MATCHDAY_API_URL: ${{ secrets.MATCHDAY_API_URL }}
-                  MATCHDAY_AUTH_URL: ${{ secrets.MATCHDAY_AUTH_URL }}
               run: npm test
 
-            - name: Build
-              run: npm run build
-
-            # Optional: ensure the tag (e.g. v1.2.3) matches package.json version
-            - name: Verify tag matches package.json version
-              run: |
-                  PKG_VERSION=$(node -p "require('./package.json').version")
-                  TAG_VERSION=${GITHUB_REF_NAME#v}
-                  if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
-                    echo "Tag v$TAG_VERSION does not match package.json version $PKG_VERSION"
-                    exit 1
-                  fi
-
-            - name: Publish to npm
-              run: |
-                  npm publish --provenance --access public
+            # Opens/updates a "Version Packages" PR when changesets are pending on main;
+            # once that PR is merged (no changesets left), publishes to npm instead.
+            - name: Create Release PR or publish to npm
+              uses: changesets/action@v1
+              with:
+                  version: npm run version
+                  publish: npm run release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
