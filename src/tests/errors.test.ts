@@ -78,6 +78,17 @@ describe('httpResponseToAPIError', () => {
             expect(error?.message).toBe('Access denied');
             expect(error?.status).toBe(403);
         });
+
+        it('returns MatchDayForbiddenError for API Gateway generic { message } body', async () => {
+            // API Gateway itself (not the app) returns this shape when a request is
+            // rejected before reaching the API, e.g. a missing/invalid API key.
+            const res = createMockResponse(403, { message: 'Forbidden' }, false);
+            const error = await httpResponseToAPIError(res);
+
+            expect(error).toBeInstanceOf(MatchDayForbiddenError);
+            expect(error?.message).toBe('Forbidden');
+            expect(error?.status).toBe(403);
+        });
     });
 
     describe('404 Not Found', () => {

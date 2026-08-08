@@ -8,7 +8,7 @@
 
 import { MatchDayClient } from '../../client';
 import { MatchDayHistoryEntity } from '../../types/common';
-import { MatchDayNotFoundError, MatchDayUnauthorizedError } from '../../types/errors';
+import { MatchDayForbiddenError, MatchDayNotFoundError } from '../../types/errors';
 
 // Increase timeout for integration tests (30 seconds)
 jest.setTimeout(30000);
@@ -354,18 +354,20 @@ describeWithApi('API Integration Tests', () => {
             }
         });
 
-        it('throws MatchDayUnauthorizedError for invalid API key', async () => {
+        // Rejected by API Gateway's usage plan before the request reaches the API,
+        // so this surfaces as a 403 rather than an application-level 401.
+        it('throws MatchDayForbiddenError for invalid API key', async () => {
             const invalidClient = new MatchDayClient({
                 apiKey: 'invalid-api-key',
                 baseURL: process.env.MATCHDAY_API_URL,
             });
 
             await expect(invalidClient.matches.list({ itemsPerPage: 1 })).rejects.toThrow(
-                MatchDayUnauthorizedError,
+                MatchDayForbiddenError,
             );
         });
 
-        it('throws MatchDayUnauthorizedError with correct status code', async () => {
+        it('throws MatchDayForbiddenError with correct status code', async () => {
             const invalidClient = new MatchDayClient({
                 apiKey: 'invalid-api-key',
                 baseURL: process.env.MATCHDAY_API_URL,
@@ -373,10 +375,10 @@ describeWithApi('API Integration Tests', () => {
 
             try {
                 await invalidClient.matches.list({ itemsPerPage: 1 });
-                fail('Expected MatchDayUnauthorizedError to be thrown');
+                fail('Expected MatchDayForbiddenError to be thrown');
             } catch (error) {
-                expect(error).toBeInstanceOf(MatchDayUnauthorizedError);
-                expect((error as MatchDayUnauthorizedError).status).toBe(401);
+                expect(error).toBeInstanceOf(MatchDayForbiddenError);
+                expect((error as MatchDayForbiddenError).status).toBe(403);
             }
         });
     });

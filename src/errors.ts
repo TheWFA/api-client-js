@@ -1,7 +1,6 @@
 import {
     MatchDayAPIError,
     MatchDayBadRequestError,
-    MatchDayErrorBody,
     MatchDayNotFoundError,
     MatchDayUnauthorizedError,
     MatchDayExceededRateLimitError,
@@ -17,6 +16,38 @@ const ERROR_CLASSES = {
 } as const;
 
 const MAX_BODY_SNIPPET_LENGTH = 500;
+
+type ExtractedError = { message: string; code?: string };
+
+/**
+ * Extracts a message/code from either the API's own `{ error: { code, message } }`
+ * body, or the generic `{ message }` shape returned by API Gateway itself when a
+ * request is rejected before reaching the API (e.g. a missing/invalid API key).
+ */
+function extractError(json: unknown): ExtractedError | undefined {
+    if (!json || typeof json !== 'object') {
+        return undefined;
+    }
+
+    const body = json as Record<string, unknown>;
+
+    if (body.error && typeof body.error === 'object') {
+        const error = body.error as Record<string, unknown>;
+
+        if (typeof error.message === 'string') {
+            return {
+                message: error.message,
+                code: typeof error.code === 'string' ? error.code : undefined,
+            };
+        }
+    }
+
+    if (typeof body.message === 'string') {
+        return { message: body.message };
+    }
+
+    return undefined;
+}
 
 export async function httpResponseToAPIError(res: Response): Promise<MatchDayAPIError | undefined> {
     if (res.ok) {
@@ -36,15 +67,13 @@ export async function httpResponseToAPIError(res: Response): Promise<MatchDayAPI
     }
 
     try {
-        const json: MatchDayErrorBody = JSON.parse(rawBody);
+        const extracted = extractError(JSON.parse(rawBody));
 
-        if (!json?.error?.message) {
-            throw new Error(
-                'response body did not match the expected { error: { message } } shape',
-            );
+        if (!extracted) {
+            throw new Error('response body did not contain a recognizable error message');
         }
 
-        return new ErrorClass(json.error.message, json.error.code);
+        return new ErrorClass(extracted.message, extracted.code);
     } catch (err) {
         const detail = err instanceof Error ? err.message : String(err);
 
