@@ -1,22 +1,13 @@
-export type MatchDayCourtPartial = {
-    id: string;
-    name: string;
-};
+import { MatchDayLocationRef } from './common';
 
-export type MatchDayCourt = MatchDayCourtPartial & {
-    location: MatchDayLocation;
-};
+export type MatchDayLocation = MatchDayLocationRef;
 
-export type MatchDayLocation = {
-    id: string;
+export type MatchDayCourtRef = {
+    id: number;
+    locationId: number;
     name: string;
-    addressFirstLine: string;
-    addressSecondLine: string | null;
-    postcode: string;
-    county: string;
-    country: string;
 };
 
 export type MatchDayLocationWithCourts = MatchDayLocation & {
-    courts: MatchDayCourtPartial[];
+    courts: MatchDayCourtRef[];
 };

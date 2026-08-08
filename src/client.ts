@@ -1,15 +1,21 @@
+import { AccreditationsResource } from './resources/accreditations';
+import { ClubsResource } from './resources/clubs';
 import { CompetitionsResource } from './resources/competitions';
-import { TeamsResource } from './resources/teams';
-import { PersonsResource } from './resources/persons';
-import { SeasonsResource } from './resources/seasons';
-import { SearchResource } from './resources/search';
-import { httpResponseToAPIError } from './errors';
+import { HistoryResource } from './resources/history';
+import { KitsResource } from './resources/kits';
+import { LocationsResource } from './resources/locations';
 import { MatchResource } from './resources/matches';
+import { OrganisationsResource } from './resources/organisations';
+import { PersonsResource } from './resources/persons';
+import { SearchResource } from './resources/search';
+import { SeasonsResource } from './resources/seasons';
+import { SuspensionsResource } from './resources/suspensions';
+import { TeamsResource } from './resources/teams';
+import { TiesResource } from './resources/ties';
+import { httpResponseToAPIError } from './errors';
 import { parseDates } from './time';
 import { MatchDayAPIError } from './types/errors';
-import { UsersResource } from './resources/users';
-import { LocationsResource } from './resources/locations';
-import { ClubsResource } from './resources/clubs';
+import { MatchDayHealth } from './types/health';
 
 export enum MatchDayAPIVersion {
     V1 = '/v1',
@@ -18,12 +24,12 @@ export enum MatchDayAPIVersion {
 
 export type APIClientConfig = {
     baseURL?: string;
-    apiKey?: string;
-    accessToken?: string;
+    apiKey: string;
     version?: MatchDayAPIVersion;
+    headers?: Record<string, string>;
 };
 
-const defaultConfig: APIClientConfig = {
+const defaultConfig: Partial<APIClientConfig> = {
     baseURL: 'https://api.thewfa.org.uk',
     version: MatchDayAPIVersion.V1,
 };
@@ -32,14 +38,19 @@ export class MatchDayClient {
     private config: APIClientConfig;
 
     public readonly matches = new MatchResource(this);
-    public readonly competitions = new CompetitionsResource(this);
+    public readonly locations = new LocationsResource(this);
     public readonly teams = new TeamsResource(this);
+    public readonly clubs = new ClubsResource(this);
+    public readonly competitions = new CompetitionsResource(this);
+    public readonly organisations = new OrganisationsResource(this);
     public readonly seasons = new SeasonsResource(this);
+    public readonly accreditations = new AccreditationsResource(this);
     public readonly persons = new PersonsResource(this);
     public readonly search = new SearchResource(this);
-    public readonly users = new UsersResource(this);
-    public readonly locations = new LocationsResource(this);
-    public readonly clubs = new ClubsResource(this);
+    public readonly history = new HistoryResource(this);
+    public readonly suspensions = new SuspensionsResource(this);
+    public readonly ties = new TiesResource(this);
+    public readonly kits = new KitsResource(this);
 
     constructor(config: APIClientConfig) {
         this.config = {
@@ -48,8 +59,11 @@ export class MatchDayClient {
         };
     }
 
-    setAccessToken(token: string) {
-        this.config.accessToken = token;
+    /**
+     * Retrieves the API's health status.
+     */
+    async health() {
+        return this.makeRequest<MatchDayHealth>('/health', { method: 'GET' });
     }
 
     async makeRequest<T>(path: string, init?: RequestInit): Promise<T> {
@@ -57,17 +71,11 @@ export class MatchDayClient {
             'Content-Type': 'application/json',
         };
 
-        if (!this.config.accessToken && !this.config.apiKey) {
+        if (!this.config.apiKey) {
             throw new MatchDayAPIError('No authentication method set');
         }
 
-        if (this.config.apiKey) {
-            defaultHeaders['Authorization'] = `ApiKey ${this.config.apiKey}`;
-        }
-
-        if (this.config.accessToken) {
-            defaultHeaders['Authorization'] = `Bearer ${this.config.accessToken}`;
-        }
+        defaultHeaders['Authorization'] = `ApiKey ${this.config.apiKey}`;
 
         const res = await fetch(
             this.config.baseURL + (this.config.version ?? defaultConfig.version!) + path,
@@ -75,6 +83,7 @@ export class MatchDayClient {
                 ...init,
                 headers: {
                     ...defaultHeaders,
+                    ...this.config.headers,
                     ...(init?.headers || {}),
                 },
             },

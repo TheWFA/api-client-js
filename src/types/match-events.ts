@@ -1,5 +1,4 @@
-import { MatchDayMatchStatus } from './match';
-import { MatchDayPerson } from './person';
+import { MatchDayPersonRef } from './common';
 
 export enum MatchDayMatchEventType {
     Goal = 'goal',
@@ -13,35 +12,41 @@ export enum MatchDayGoalType {
     OwnGoal = 'own-goal',
 }
 
+export enum MatchDayMatchEventPeriod {
+    FirstHalf = 'first-half',
+    SecondHalf = 'second-half',
+    ExtraTime = 'extra-time',
+    ExtraTimeFirstHalf = 'extra-time-first-half',
+    ExtraTimeSecondHalf = 'extra-time-second-half',
+    Penalties = 'penalties',
+}
+
 export type MatchDayBaseMatchEvent = {
-    type: MatchDayMatchEventType;
     createdAt: Date;
-    time?: number | null;
-    matchPeriod?: MatchDayMatchStatus | null;
+    time: number | null;
+    matchPeriod: MatchDayMatchEventPeriod | null;
+    teamId: number;
 };
 
-export type MatchDayGoalMatchEvent = {
-    player: MatchDayPerson;
-    teamId: string;
+export type MatchDayGoalMatchEvent = MatchDayBaseMatchEvent & {
+    type: MatchDayMatchEventType.Goal;
+    player: MatchDayPersonRef;
     penalty: boolean;
-    goaltype: MatchDayGoalType;
+    goalType: MatchDayGoalType;
 };
 
-export type MatchDayCardMatchEvent = {
-    player: MatchDayPerson;
-    teamId: string;
+export type MatchDayCardMatchEvent = MatchDayBaseMatchEvent & {
+    type: MatchDayMatchEventType.YellowCard | MatchDayMatchEventType.RedCard;
+    player: MatchDayPersonRef;
 };
 
-export type MatchDaySubstitutionMatchEvent = {
-    playerOn: MatchDayPerson;
-    playerOff: MatchDayPerson;
-    teamId: string;
+export type MatchDaySubstitutionMatchEvent = MatchDayBaseMatchEvent & {
+    type: MatchDayMatchEventType.Substitution;
+    playerOn: MatchDayPersonRef;
+    playerOff: MatchDayPersonRef;
 };
 
 export type MatchDayMatchEvent =
-    | ({ type: MatchDayMatchEventType.Goal } & MatchDayBaseMatchEvent & MatchDayGoalMatchEvent)
-    | ({ type: MatchDayMatchEventType.RedCard } & MatchDayBaseMatchEvent & MatchDayCardMatchEvent)
-    | ({ type: MatchDayMatchEventType.YellowCard } & MatchDayBaseMatchEvent &
-          MatchDayCardMatchEvent)
-    | ({ type: MatchDayMatchEventType.Substitution } & MatchDayBaseMatchEvent &
-          MatchDaySubstitutionMatchEvent);
+    | MatchDayGoalMatchEvent
+    | MatchDayCardMatchEvent
+    | MatchDaySubstitutionMatchEvent;

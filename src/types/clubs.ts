@@ -1,12 +1,24 @@
-import { MatchDayTeamPartial } from './team';
-
-export type MatchDayClubPartial = {
-    id: string;
-    name: string;
-    logo: string | null;
-};
+import { MatchDayHistoryEntry } from './common';
 
 export type MatchDayClub = {
+    id: number;
+    name: string;
+    clubLogo: string | null;
     contactEmail: string | null;
-    teams: MatchDayTeamPartial[];
-} & MatchDayClubPartial;
+    createdAt: Date;
+};
+
+export type MatchDayClubTeamRef = {
+    id: number;
+    name: string;
+    abbreviated: string;
+    nickname: string;
+    badgeUrl: string;
+    primary: string;
+    secondary: string;
+};
+
+export type MatchDayFullClub = MatchDayClub & {
+    teams: MatchDayClubTeamRef[];
+    history?: MatchDayHistoryEntry[];
+};

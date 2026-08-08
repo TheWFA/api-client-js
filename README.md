@@ -2,21 +2,18 @@
 
 ## THE API IS CURRENTLY UNRELEASED
 
-A TypeScript/JavaScript client for accessing **Wheelchair Football Association (WFA)** data.
+A TypeScript/JavaScript client for accessing **Wheelchair Football Association (WFA)** Matchday data.
 
-- **Docs:** [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
-- **Developer portal (tokens):** [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
-
-> This library aims to provide a clean, typed interface to the WFA API with first‑class TypeScript support, ESM/CJS builds, and friendly DX.
+> This library aims to provide a clean, typed interface to the WFA Matchday API with first‑class TypeScript support, ESM/CJS builds, and friendly DX.
 
 ---
 
 ## Features
 
-- ✅ TypeScript types for requests and responses
+- ✅ TypeScript types for every request and response
 - ✅ ESM & CommonJS builds
-- ✅ Token-based auth (`Authorization: Token <token>`)
-- ✅ Built-in helpers for common queries (matches, teams, competitions, etc.)
+- ✅ API key auth (`Authorization: ApiKey <key>`)
+- ✅ Full coverage of matches, teams, clubs, competitions, organisations, seasons, persons, accreditations, suspensions, ties, kits, search and history
 - ✅ Works in Node 18+ and modern browsers
 
 ---
@@ -41,16 +38,13 @@ bun add @thewfa/api-client
 
 ## Authentication
 
-1. Create an application and generate an access token in the **Developer Portal**:
-    - [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
-
-2. Pass your token to the client. The client will send it as:
+Pass your API key to the client. It's sent as:
 
 ```
-Authorization: Token <your_access_token>
+Authorization: ApiKey <your_api_key>
 ```
 
-> **Never commit tokens** to source control. Prefer environment variables.
+> **Never commit API keys** to source control. Prefer environment variables.
 
 ---
 
@@ -61,20 +55,16 @@ Authorization: Token <your_access_token>
 ```ts
 import { MatchDayClient } from '@thewfa/api-client';
 
-// Prefer loading the token from env vars or your secret store
 const client = new MatchDayClient({
-    token: process.env.WFA_API_TOKEN!,
+    apiKey: process.env.WFA_API_KEY!,
 });
 
 // List the latest matches
-await client.matches.list({
-    orderBy: { date: 'desc' },
-    limit: 20,
-});
+const matches = await client.matches.list({ itemsPerPage: 20, orderByDateDesc: true });
 
 // Fetch a single match by ID
-const match = await client.matches.get('match_123');
-console.log(match.details.homeTeam.name, match.details.awayTeam.name);
+const match = await client.matches.get(matches.items[0].id);
+console.log(match.homeTeam.name, match.awayTeam.name);
 ```
 
 ### CommonJS
@@ -82,10 +72,10 @@ console.log(match.details.homeTeam.name, match.details.awayTeam.name);
 ```js
 const { MatchDayClient } = require('@thewfa/api-client');
 
-const client = new MatchDayClient({ token: process.env.WFA_API_TOKEN });
+const client = new MatchDayClient({ apiKey: process.env.WFA_API_KEY });
 
 client.matches
-    .list({ limit: 10 })
+    .list({ itemsPerPage: 10 })
     .then((res) => console.log(res))
     .catch((err) => console.error(err));
 ```
@@ -95,29 +85,55 @@ client.matches
 ## Options
 
 ```ts
-type WfaClientOptions = {
-    /** Required: access token from the developer portal */
-    token: string;
+type APIClientConfig = {
+    /** Required: your API key */
+    apiKey?: string;
     /** Optional: API base URL override (defaults to the official base) */
-    baseUrl?: string;
+    baseURL?: string;
+    /** Optional: API version path prefix, defaults to /v1 */
+    version?: MatchDayAPIVersion;
 };
 ```
 
 ---
 
-## Errors & Retries
+## Resources
 
-- Network and HTTP errors throw `APIError` with:
+| Resource                | Description                                                           |
+| ----------------------- | --------------------------------------------------------------------- |
+| `client.matches`        | List and fetch matches (lineups, events, penalties)                   |
+| `client.teams`          | Teams, rosters, staff, registrations, seasons played, stats           |
+| `client.clubs`          | Clubs and their teams                                                 |
+| `client.competitions`   | Competitions, tables, match groups, stats                             |
+| `client.organisations`  | Organisations and the competitions they run                           |
+| `client.seasons`        | Seasons                                                               |
+| `client.persons`        | People: registrations, appearances, stats, suspensions                |
+| `client.accreditations` | Accreditations and their facets                                       |
+| `client.suspensions`    | Suspensions (global list, split by origin/served-in match)            |
+| `client.ties`           | Two-legged ties and aggregate scores                                  |
+| `client.kits`           | Kit types and per-team kits                                           |
+| `client.history`        | Superseded identities of teams, clubs, competitions and organisations |
+| `client.search`         | Fuzzy search across persons, teams, clubs, competitions and matches   |
+| `client.health()`       | API health status                                                     |
 
-- `message` (human‑readable)
-- `data` (parsed error body when available)
-- Add your own retry policy with a wrapper (e.g., `p-retry`).
+---
+
+## Errors
+
+Network and HTTP errors throw a subclass of `MatchDayAPIError` with:
+
+- `message` — human‑readable
+- `status` — the HTTP status code
+- `code` — the API's error code, when available
+- `jsonResponse` — the parsed error body
 
 ```ts
+import { MatchDayNotFoundError } from '@thewfa/api-client';
+
 try {
-    await client.matches.get('bad_id');
+    await client.matches.get(999999);
 } catch (e) {
-    if (e instanceof NotFoundError) {
+    if (e instanceof MatchDayNotFoundError) {
         // not found
     }
 }
@@ -135,32 +151,9 @@ npm run build
 npm run lint
 npm run format
 
-# Tests (if present)
+# Tests
 npm test
 ```
-
----
-
-## FAQ
-
-**Q: Where do I get a token?**
-A: From the Developer Portal → [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk).
-
-**Q: Which header should I send?**
-A: `Authorization: Token <access_token>`.
-
-**Q: Which Node versions are supported?**
-A: Node 18+ natively (for built‑in `fetch`)
-
-**Q: What’s the base URL?**
-A: The client defaults to the official WFA API base. You can override it via `baseUrl` if the docs specify a different environment. This can be useful for testing.
-
----
-
-## Links
-
-- API docs: [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
-- Developer portal: [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
 
 ---
 

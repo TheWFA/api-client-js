@@ -1,73 +1,30 @@
-import { MatchDayCourt } from './locations';
+import {
+    MatchDayCompetitionRefWithOrganisation,
+    MatchDayLocationRef,
+    MatchDayPersonRef,
+    MatchDaySeasonRef,
+    MatchDayTeamRef,
+} from './common';
 import { MatchDayMatchEvent } from './match-events';
-import { MatchDayPerson } from './person';
-import { MatchDaySeasonPartial } from './season';
-import { MatchDayTeamPartial } from './team';
 
 export enum MatchDayMatchStatus {
     Scheduled = 'scheduled',
     FirstHalf = 'first-half',
     HalfTime = 'half-time',
     SecondHalf = 'second-half',
-    FullTime = 'full-time',
-    Complete = 'completed',
-    Postponed = 'postponed',
-    Abandoned = 'abandoned',
     FirstHalfExtraTime = 'extra-time-first-half',
     HalfTimeExtraTime = 'half-time-extra-time',
     SecondHalfExtraTime = 'extra-time-second-half',
-    Penalties = 'penalty-shootout',
+    Penalties = 'penalties',
+    FullTime = 'full-time',
+    Postponed = 'postponed',
+    Abandoned = 'abandoned',
+    Cancelled = 'cancelled',
+    Forfeit = 'forfeit',
+    Awarded = 'awarded',
 }
 
-export enum MatchDayMatchType {
-    League = 'league',
-    Knockout = 'knockout',
-}
-
-export type MatchDayMatchTimes = {
-    firstHalfStartedAt: Date;
-    secondHalfStartedAt: Date;
-    firstHalfExtraTimeStartedAt: Date;
-    secondHalfExtraTimeStartedAt: Date;
-};
-
-export type MatchDayMatchOfficials = {
-    referee: MatchDayPerson | null;
-    assistant1: MatchDayPerson | null;
-    assistant2: MatchDayPerson | null;
-    fourthOfficial: MatchDayPerson | null;
-};
-
-export type MatchDayMatchGroup = {
-    id: string;
-    competition: string;
-    name: string;
-};
-
-export type MatchDayMatch = {
-    id: string;
-    homeTeam: MatchDayTeamPartial;
-    awayTeam: MatchDayTeamPartial;
-    homeScore: number;
-    awayScore: number;
-    homeScorePenalty: number;
-    awayScorePenalty: number;
-    status: MatchDayMatchStatus;
-    scheduledFor: Date;
-    times: MatchDayMatchTimes;
-    competition: {
-        id: string;
-        name: string;
-        logo: string | null;
-    };
-    season: MatchDaySeasonPartial;
-    court?: MatchDayCourt;
-    group?: MatchDayMatchGroup;
-    officials: MatchDayMatchOfficials;
-    streamLink?: string;
-};
-
-export enum MatchDayPlayerPostition {
+export enum MatchDayPlayerPosition {
     Left = 'left',
     Right = 'right',
     Centre = 'centre',
@@ -75,16 +32,75 @@ export enum MatchDayPlayerPostition {
     Substitute = 'sub',
 }
 
+export type MatchDayMatchTimes = {
+    firstHalfStartedAt: Date | null;
+    secondHalfStartedAt: Date | null;
+    firstHalfExtraTimeStartedAt: Date | null;
+    secondHalfExtraTimeStartedAt: Date | null;
+};
+
+export type MatchDayMatchOfficials = {
+    referee?: MatchDayPersonRef;
+    assistant1?: MatchDayPersonRef;
+    assistant2?: MatchDayPersonRef;
+    fourthOfficial?: MatchDayPersonRef;
+};
+
+export type MatchDayMatchGroupRef = {
+    id: number;
+    competitionId: number;
+    name: string;
+};
+
+export type MatchDayMatchCourt = {
+    id: number;
+    name: string;
+    location: MatchDayLocationRef;
+};
+
+export type MatchDayMatchStream = {
+    id: number;
+    streamUrl: string | null;
+    commentators: string | null;
+};
+
+export type MatchDayMatch = {
+    id: number;
+    status: MatchDayMatchStatus;
+    scheduledFor: Date | null;
+    times: MatchDayMatchTimes;
+    hidden: boolean;
+    homeTeam: MatchDayTeamRef;
+    awayTeam: MatchDayTeamRef;
+    homeScore: number;
+    awayScore: number;
+    homeScorePenalty: number;
+    awayScorePenalty: number;
+    competition: MatchDayCompetitionRefWithOrganisation;
+    season: MatchDaySeasonRef;
+    court: MatchDayMatchCourt | null;
+    matchGroup: MatchDayMatchGroupRef | null;
+    officials: MatchDayMatchOfficials;
+    streams: MatchDayMatchStream[];
+};
+
 export type MatchDayMatchPlayer = {
-    person: MatchDayPerson;
-    number: number;
-    position: MatchDayPlayerPostition | null;
+    person: MatchDayPersonRef;
+    number: number | null;
+    position: MatchDayPlayerPosition;
     captain: boolean;
 };
 
-export type MatchDayFullMatch = {
-    details: MatchDayMatch;
+export type MatchDayMatchPenalty = {
+    sequence: number;
+    teamId: number;
+    scored: boolean | null;
+    player: MatchDayPersonRef;
+};
+
+export type MatchDayFullMatch = MatchDayMatch & {
     homeLineups: MatchDayMatchPlayer[];
     awayLineups: MatchDayMatchPlayer[];
     events: MatchDayMatchEvent[];
+    penalties: MatchDayMatchPenalty[];
 };

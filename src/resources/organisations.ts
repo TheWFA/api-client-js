@@ -2,28 +2,28 @@ import qs from 'qs';
 
 import { MatchDayClient } from '../client';
 import { MatchDayBaseListQuery } from '../types/api';
-import { MatchDayClub, MatchDayFullClub } from '../types/clubs';
+import { MatchDayFullOrganisation, MatchDayOrganisation } from '../types/organisations';
 import { ListResponse } from '../types/list-response';
 
 import { APIResource } from './resource';
 
-export class ClubsResource extends APIResource {
+export class OrganisationsResource extends APIResource {
     constructor(client: MatchDayClient) {
-        super(client, '/clubs');
+        super(client, '/organisations');
     }
 
     /**
-     * Retrieves a paginated list of clubs.
+     * Retrieves a paginated list of organisations.
      *
      * @example
-     * const response = await client.clubs.list({ itemsPerPage: 20 });
+     * const response = await client.organisations.list({ itemsPerPage: 20 });
      * console.log(response.items[0].name);
      * console.log(response.totalItems);
      */
     async list(query: MatchDayBaseListQuery = {}) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<ListResponse<MatchDayClub>>(
+        return this.client.makeRequest<ListResponse<MatchDayOrganisation>>(
             this.basePath + '?' + queryString,
             {
                 method: 'GET',
@@ -32,12 +32,12 @@ export class ClubsResource extends APIResource {
     }
 
     /**
-     * Retrieves detailed information about a specific club, including its teams.
+     * Retrieves detailed information about a specific organisation, including its competitions.
      *
-     * @throws {MatchDayAPIError} If the request fails, the club is not found, or the server responds with an error.
+     * @throws {MatchDayAPIError} If the request fails, the organisation is not found, or the server responds with an error.
      */
     async get(id: number) {
-        return this.client.makeRequest<MatchDayFullClub>(this.basePath + '/' + id, {
+        return this.client.makeRequest<MatchDayFullOrganisation>(this.basePath + '/' + id, {
             method: 'GET',
         });
     }

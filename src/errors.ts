@@ -1,8 +1,7 @@
 import {
     MatchDayAPIError,
-    MatchDayBadRequestBody,
     MatchDayBadRequestError,
-    MatchDayBaseErrorBody,
+    MatchDayErrorBody,
     MatchDayNotFoundError,
     MatchDayUnauthorizedError,
     MatchDayExceededRateLimitError,
@@ -17,39 +16,33 @@ export async function httpResponseToAPIError(res: Response): Promise<MatchDayAPI
 
         switch (res.status) {
             case 400: {
-                const json: MatchDayBadRequestBody = await res.json();
+                const json: MatchDayErrorBody = await res.json();
 
-                const er = new MatchDayBadRequestError(json.message);
-
-                if (json.errors) {
-                    er.validationIssues = json.errors;
-                }
-
-                return er;
+                return new MatchDayBadRequestError(json.error.message, json.error.code);
             }
 
             case 401: {
-                const json: MatchDayBaseErrorBody = await res.json();
+                const json: MatchDayErrorBody = await res.json();
 
-                return new MatchDayUnauthorizedError(json.message);
+                return new MatchDayUnauthorizedError(json.error.message, json.error.code);
             }
 
             case 403: {
-                const json: MatchDayBaseErrorBody = await res.json();
+                const json: MatchDayErrorBody = await res.json();
 
-                return new MatchDayForbiddenError(json.message);
+                return new MatchDayForbiddenError(json.error.message, json.error.code);
             }
 
             case 404: {
-                const json: MatchDayBaseErrorBody = await res.json();
+                const json: MatchDayErrorBody = await res.json();
 
-                return new MatchDayNotFoundError(json.message);
+                return new MatchDayNotFoundError(json.error.message, json.error.code);
             }
 
             case 429: {
-                const json: MatchDayBaseErrorBody = await res.json();
+                const json: MatchDayErrorBody = await res.json();
 
-                return new MatchDayExceededRateLimitError(json.message);
+                return new MatchDayExceededRateLimitError(json.error.message, json.error.code);
             }
 
             default: {

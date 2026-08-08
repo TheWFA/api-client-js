@@ -2,16 +2,21 @@ import qs from 'qs';
 
 import { MatchDayClient } from '../client';
 import {
+    MatchDayFullTeam,
     MatchDayTeam,
-    MatchDayTeamPartial,
-    MatchDayTeamStaffRegistration,
-    MatchDayTeamPlayerRegistration,
-    TeamPlayersStatsQuery,
-    TeamStaffQuery,
     MatchDayTeamListQuery,
-    TeamStatsSummaryQuery,
+    MatchDayTeamPlayerRegistration,
+    MatchDayTeamPlayersQuery,
+    MatchDayTeamRegistration,
+    MatchDayTeamRegistrationsQuery,
+    MatchDayTeamStaffQuery,
+    MatchDayTeamStaffRegistration,
+    MatchDayTeamStatsSummary,
+    MatchDayTeamStatsSummaryQuery,
 } from '../types/team';
-import { ListResponse } from '../types/list-response';
+import { MatchDayPlayerStatsQuery, MatchDayPlayerStatsRow } from '../types/stats';
+import { ListResponse, UnpaginatedListResponse } from '../types/list-response';
+import { MatchDaySeasonRef } from '../types/common';
 
 import { APIResource } from './resource';
 
@@ -21,20 +26,33 @@ export class TeamsStatsResource extends APIResource {
     }
 
     /**
-     * Retrieves a summary of a team's statistics.
+     * Retrieves aggregate results and discipline stats for a team.
      *
-     * @async
-     * @function
-     * @param {string} id - The unique identifier of the team.
-     * @param {TeamStatsSummaryQuery} query - Query parameters to filter the statistics summary.
-     * @returns {Promise<TeamStatsSummaryQuery>} A promise that resolves to the team's statistics summary.
-     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
+     * @example
+     * const stats = await client.teams.stats.summary(123, { seasonId: 2025 });
      */
-    async summary(id: string, query: TeamStatsSummaryQuery) {
+    async summary(id: number, query: MatchDayTeamStatsSummaryQuery = {}) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<TeamStatsSummaryQuery>(
+        return this.client.makeRequest<MatchDayTeamStatsSummary>(
             this.basePath + '/' + id + '/stats/summary?' + queryString,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    /**
+     * Retrieves per-player stats aggregates for a team.
+     *
+     * @example
+     * const players = await client.teams.stats.players(123, { orderBy: 'goals' });
+     */
+    async players(id: number, query: MatchDayPlayerStatsQuery = {}) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayPlayerStatsRow>>(
+            this.basePath + '/' + id + '/stats/players?' + queryString,
             {
                 method: 'GET',
             },
@@ -53,25 +71,15 @@ export class TeamsResource extends APIResource {
     /**
      * Retrieves a paginated list of teams.
      *
-     * Builds a query string from the provided {@link MatchDayBaseListQuery} options
-     * and fetches a {@link ListResponse} containing {@link MatchDayTeamPartial} objects from the API.
-     *
-     * @async
-     * @function
-     * @param {MatchDayBaseListQuery} query - Query parameters such as pagination, filters, or sorting.
-     * @returns A promise that resolves to a {@link ListResponse} containing teams and pagination metadata.
-     *
-     * @throws {MatchDayAPIError} If the request fails or the server responds with an error.
-     *
      * @example
      * const response = await client.teams.list({ itemsPerPage: 20 });
      * console.log(response.items[0].name);
-     * console.log(response.pagination.totalItems);
+     * console.log(response.totalItems);
      */
-    async list(query: MatchDayTeamListQuery) {
+    async list(query: MatchDayTeamListQuery = {}) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<ListResponse<MatchDayTeamPartial>>(
+        return this.client.makeRequest<ListResponse<MatchDayTeam>>(
             this.basePath + '?' + queryString,
             {
                 method: 'GET',
@@ -82,42 +90,22 @@ export class TeamsResource extends APIResource {
     /**
      * Retrieves detailed information about a specific team.
      *
-     * Makes a `GET` request to fetch the full {@link Team} resource
-     * by its unique identifier.
-     *
-     * @async
-     * @function
-     * @param id - The unique identifier of the team.
-     *
      * @throws {MatchDayAPIError} If the request fails, the team is not found, or the server responds with an error.
      */
-    async get(id: string) {
-        return this.client.makeRequest<MatchDayTeam>(this.basePath + '/' + id, { method: 'GET' });
+    async get(id: number) {
+        return this.client.makeRequest<MatchDayFullTeam>(this.basePath + '/' + id, {
+            method: 'GET',
+        });
     }
 
     /**
-     * Retrieves a list of player registrations for a given team and season.
-     *
-     * Makes a `GET` request to fetch an array of {@link MatchDayTeamPlayerRegistration} resources
-     * filtered by the provided team ID, season ID, and query parameters.
-     *
-     * @async
-     * @function
-     * @param  teamId - The unique identifier of the team.
-     * @param  query - The filtering and pagination options for the request.
-     * @returns  A promise that resolves to an array of player registrations.
-     *
-     * @throws {MatchDayAPIError} If the request fails, the query is invalid, or the server responds with an error.
-     *
-     * @example
-     * const players = await client.teams.listPlayers("team123", "season2025", { limit: 10 });
-     * console.log(players[0].playerId, players[0].status);
+     * Retrieves the playing roster for a team.
      */
-    async players(teamId: string, query: TeamPlayersStatsQuery) {
+    async players(id: number, query: MatchDayTeamPlayersQuery = {}) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayTeamPlayerRegistration[]>(
-            `${this.basePath}/${teamId}/stats/players?${queryString}`,
+        return this.client.makeRequest<ListResponse<MatchDayTeamPlayerRegistration>>(
+            `${this.basePath}/${id}/players?${queryString}`,
             {
                 method: 'GET',
             },
@@ -125,28 +113,39 @@ export class TeamsResource extends APIResource {
     }
 
     /**
-     * Retrieves a list of staff registrations for a given team and season.
-     *
-     * Makes a `GET` request to fetch an array of {@link MatchDayTeamStaffRegistration} resources
-     * filtered by the provided team ID, season ID, and query parameters.
-     *
-     * @async
-     * @function
-     * @param {string} teamId - The unique identifier of the team.
-     * @param {MatchDayBaseListQuery} query - The filtering and pagination options for the request.
-     * @returns A promise that resolves to an array of staff registrations.
-     *
-     * @throws {MatchDayAPIError} If the request fails, the query is invalid, or the server responds with an error.
-     *
-     * @example
-     * const staff = await client.teams.listStaff("team123", "season2025", { offset: 0, limit: 5 });
-     * console.log(staff[0].staffId, staff[0].role);
+     * Retrieves the staff roster for a team.
      */
-    async staff(teamId: string, query: TeamStaffQuery) {
+    async staff(id: number, query: MatchDayTeamStaffQuery = {}) {
         const queryString = qs.stringify(query);
 
-        return this.client.makeRequest<MatchDayTeamStaffRegistration[]>(
-            `${this.basePath}/${teamId}/staff?${queryString}`,
+        return this.client.makeRequest<ListResponse<MatchDayTeamStaffRegistration>>(
+            `${this.basePath}/${id}/staff?${queryString}`,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    /**
+     * Retrieves the competitions and seasons a team is entered into.
+     */
+    async registrations(id: number, query: MatchDayTeamRegistrationsQuery = {}) {
+        const queryString = qs.stringify(query);
+
+        return this.client.makeRequest<ListResponse<MatchDayTeamRegistration>>(
+            `${this.basePath}/${id}/registrations?${queryString}`,
+            {
+                method: 'GET',
+            },
+        );
+    }
+
+    /**
+     * Retrieves every season a team has ever been registered into, newest first.
+     */
+    async seasons(id: number) {
+        return this.client.makeRequest<UnpaginatedListResponse<MatchDaySeasonRef>>(
+            `${this.basePath}/${id}/seasons`,
             {
                 method: 'GET',
             },

@@ -1,4 +1,4 @@
-import { MatchDayClient, MatchDayAPIVersion } from '../client';
+import { APIClientConfig, MatchDayClient, MatchDayAPIVersion } from '../client';
 import {
     MatchDayAPIError,
     MatchDayNotFoundError,
@@ -91,50 +91,50 @@ describe('MatchDayClient', () => {
             const client = new MatchDayClient({ apiKey: 'test-key' });
 
             expect(client.matches).toBeDefined();
-            expect(client.competitions).toBeDefined();
+            expect(client.locations).toBeDefined();
             expect(client.teams).toBeDefined();
+            expect(client.clubs).toBeDefined();
+            expect(client.competitions).toBeDefined();
+            expect(client.organisations).toBeDefined();
             expect(client.seasons).toBeDefined();
+            expect(client.accreditations).toBeDefined();
             expect(client.persons).toBeDefined();
             expect(client.search).toBeDefined();
-            expect(client.users).toBeDefined();
-            expect(client.locations).toBeDefined();
+            expect(client.history).toBeDefined();
+            expect(client.suspensions).toBeDefined();
+            expect(client.ties).toBeDefined();
+            expect(client.kits).toBeDefined();
         });
     });
 
-    describe('setAccessToken', () => {
-        it('updates the access token for subsequent requests', async () => {
-            (global.fetch as jest.Mock).mockResolvedValue(
-                createMockResponse(200, { data: 'test' }),
+    describe('health', () => {
+        it('fetches the health endpoint', async () => {
+            (global.fetch as jest.Mock).mockResolvedValueOnce(
+                createMockResponse(200, { status: 'healthy', scope: 'public' }),
             );
 
-            const client = new MatchDayClient({ apiKey: 'initial-key' });
+            const client = new MatchDayClient({ apiKey: 'test-key' });
+            const health = await client.health();
 
-            // First request with API key
-            await client.makeRequest('/test');
-            let call = (global.fetch as jest.Mock).mock.calls[0];
-            expect(call[1].headers['Authorization']).toBe('ApiKey initial-key');
-
-            // Update token
-            client.setAccessToken('new-access-token');
-
-            // Second request should use Bearer token
-            await client.makeRequest('/test');
-            call = (global.fetch as jest.Mock).mock.calls[1];
-            expect(call[1].headers['Authorization']).toBe('Bearer new-access-token');
+            expect(global.fetch).toHaveBeenCalledWith(
+                expect.stringContaining('/v1/health'),
+                expect.any(Object),
+            );
+            expect(health).toEqual({ status: 'healthy', scope: 'public' });
         });
     });
 
     describe('makeRequest', () => {
         describe('authentication', () => {
             it('throws error when no authentication method is set', async () => {
-                const client = new MatchDayClient({});
+                const client = new MatchDayClient({} as APIClientConfig);
 
                 await expect(client.makeRequest('/test')).rejects.toThrow(
                     'No authentication method set',
                 );
             });
 
-            it('uses API key authentication when apiKey is set', async () => {
+            it('uses API key authentication', async () => {
                 (global.fetch as jest.Mock).mockResolvedValueOnce(
                     createMockResponse(200, { data: 'test' }),
                 );
@@ -144,33 +144,6 @@ describe('MatchDayClient', () => {
 
                 const call = (global.fetch as jest.Mock).mock.calls[0];
                 expect(call[1].headers['Authorization']).toBe('ApiKey my-api-key');
-            });
-
-            it('uses Bearer token when accessToken is set', async () => {
-                (global.fetch as jest.Mock).mockResolvedValueOnce(
-                    createMockResponse(200, { data: 'test' }),
-                );
-
-                const client = new MatchDayClient({ accessToken: 'my-access-token' });
-                await client.makeRequest('/test');
-
-                const call = (global.fetch as jest.Mock).mock.calls[0];
-                expect(call[1].headers['Authorization']).toBe('Bearer my-access-token');
-            });
-
-            it('prefers Bearer token over API key when both are set', async () => {
-                (global.fetch as jest.Mock).mockResolvedValueOnce(
-                    createMockResponse(200, { data: 'test' }),
-                );
-
-                const client = new MatchDayClient({
-                    apiKey: 'my-api-key',
-                    accessToken: 'my-access-token',
-                });
-                await client.makeRequest('/test');
-
-                const call = (global.fetch as jest.Mock).mock.calls[0];
-                expect(call[1].headers['Authorization']).toBe('Bearer my-access-token');
             });
         });
 
@@ -229,7 +202,7 @@ describe('MatchDayClient', () => {
             });
 
             it('parses JSON response body', async () => {
-                const responseData = { id: '123', name: 'Test' };
+                const responseData = { id: 123, name: 'Test' };
                 (global.fetch as jest.Mock).mockResolvedValueOnce(
                     createMockResponse(200, responseData),
                 );
@@ -242,7 +215,7 @@ describe('MatchDayClient', () => {
 
             it('parses dates in response body', async () => {
                 const responseData = {
-                    id: '123',
+                    id: 123,
                     createdAt: '2024-01-15T10:30:00Z',
                 };
                 (global.fetch as jest.Mock).mockResolvedValueOnce(
@@ -250,7 +223,7 @@ describe('MatchDayClient', () => {
                 );
 
                 const client = new MatchDayClient({ apiKey: 'test-key' });
-                const result = await client.makeRequest<{ id: string; createdAt: Date }>('/test');
+                const result = await client.makeRequest<{ id: number; createdAt: Date }>('/test');
 
                 expect(result.createdAt).toBeInstanceOf(Date);
                 expect(result.createdAt.toISOString()).toBe('2024-01-15T10:30:00.000Z');
@@ -260,7 +233,11 @@ describe('MatchDayClient', () => {
         describe('error handling', () => {
             it('throws MatchDayNotFoundError for 404 response', async () => {
                 (global.fetch as jest.Mock).mockResolvedValue(
-                    createMockResponse(404, { message: 'Resource not found' }, false),
+                    createMockResponse(
+                        404,
+                        { error: { code: 'not_found', message: 'Resource not found' } },
+                        false,
+                    ),
                 );
 
                 const client = new MatchDayClient({ apiKey: 'test-key' });
@@ -271,7 +248,11 @@ describe('MatchDayClient', () => {
 
             it('throws MatchDayUnauthorizedError for 401 response', async () => {
                 (global.fetch as jest.Mock).mockResolvedValueOnce(
-                    createMockResponse(401, { message: 'Invalid token' }, false),
+                    createMockResponse(
+                        401,
+                        { error: { code: 'invalid_token', message: 'Invalid token' } },
+                        false,
+                    ),
                 );
 
                 const client = new MatchDayClient({ apiKey: 'test-key' });

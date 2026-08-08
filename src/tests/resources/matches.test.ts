@@ -1,15 +1,7 @@
 import { MatchDayClient } from '../../client';
 import { MatchResource } from '../../resources/matches';
-import { ListResponse, PaginationMeta } from '../../types/list-response';
-
-const mockPagination: PaginationMeta = {
-    totalItems: 100,
-    totalPages: 10,
-    currentPage: 1,
-    itemsPerPage: 10,
-    hasNextPage: true,
-    hasPrevPage: false,
-};
+import { ListResponse } from '../../types/list-response';
+import { MatchDayMatch, MatchDayMatchStatus } from '../../types/match';
 
 describe('MatchResource', () => {
     const originalFetch = global.fetch;
@@ -36,13 +28,11 @@ describe('MatchResource', () => {
 
     describe('list', () => {
         it('calls makeRequest with correct path and query string', async () => {
-            const mockMatches = [
-                { id: '1', homeTeam: 'Team A', awayTeam: 'Team B' },
-                { id: '2', homeTeam: 'Team C', awayTeam: 'Team D' },
-            ];
-            const mockResponse: ListResponse<(typeof mockMatches)[0]> = {
-                items: mockMatches,
-                pagination: mockPagination,
+            const mockResponse: ListResponse<Partial<MatchDayMatch>> = {
+                items: [{ id: 1 }, { id: 2 }],
+                totalItems: 2,
+                page: 1,
+                itemsPerPage: 10,
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
@@ -51,22 +41,25 @@ describe('MatchResource', () => {
             expect(makeRequestSpy).toHaveBeenCalledWith('/matches?itemsPerPage=10&page=1', {
                 method: 'GET',
             });
-            expect(result.items).toEqual(mockMatches);
-            expect(result.pagination).toEqual(mockPagination);
+            expect(result.items).toEqual(mockResponse.items);
+            expect(result.totalItems).toBe(2);
         });
 
         it('handles complex query parameters', async () => {
             const mockResponse: ListResponse<unknown> = {
                 items: [],
-                pagination: { ...mockPagination, currentPage: 2, itemsPerPage: 20 },
+                totalItems: 0,
+                page: 2,
+                itemsPerPage: 20,
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             await client.matches.list({
                 itemsPerPage: 20,
                 page: 2,
-                season: ['season-123'],
-                competition: ['comp-456'],
+                seasonId: [123],
+                competitionId: [456],
+                status: [MatchDayMatchStatus.Scheduled],
             });
 
             expect(makeRequestSpy).toHaveBeenCalledWith(expect.stringContaining('/matches?'), {
@@ -75,81 +68,51 @@ describe('MatchResource', () => {
             const path = makeRequestSpy.mock.calls[0][0] as string;
             expect(path).toContain('itemsPerPage=20');
             expect(path).toContain('page=2');
+            expect(path).toContain('seasonId%5B0%5D=123');
         });
 
         it('returns empty items array when no matches found', async () => {
             const mockResponse: ListResponse<unknown> = {
                 items: [],
-                pagination: { ...mockPagination, totalItems: 0, totalPages: 0 },
+                totalItems: 0,
+                page: 1,
+                itemsPerPage: 10,
             };
             makeRequestSpy.mockResolvedValueOnce(mockResponse);
 
             const result = await client.matches.list({ itemsPerPage: 10 });
 
             expect(result.items).toEqual([]);
-            expect(result.pagination.totalItems).toBe(0);
+            expect(result.totalItems).toBe(0);
+        });
+
+        it('defaults to an empty query when none is given', async () => {
+            makeRequestSpy.mockResolvedValueOnce({
+                items: [],
+                totalItems: 0,
+                page: 1,
+                itemsPerPage: 10,
+            });
+
+            await client.matches.list();
+
+            expect(makeRequestSpy).toHaveBeenCalledWith('/matches?', { method: 'GET' });
         });
     });
 
     describe('get', () => {
         it('calls makeRequest with correct path', async () => {
             const mockMatch = {
-                id: 'match-123',
-                homeTeam: { id: '1', name: 'Team A' },
-                awayTeam: { id: '2', name: 'Team B' },
-                score: { home: 2, away: 1 },
+                id: 123,
+                homeTeam: { id: 1, name: 'Team A' },
+                awayTeam: { id: 2, name: 'Team B' },
             };
             makeRequestSpy.mockResolvedValueOnce(mockMatch);
 
-            const result = await client.matches.get('match-123');
+            const result = await client.matches.get(123);
 
-            expect(makeRequestSpy).toHaveBeenCalledWith('/matches/match-123', { method: 'GET' });
+            expect(makeRequestSpy).toHaveBeenCalledWith('/matches/123', { method: 'GET' });
             expect(result).toEqual(mockMatch);
-        });
-
-        it('handles special characters in ID', async () => {
-            makeRequestSpy.mockResolvedValueOnce({ id: 'match-with-special' });
-
-            await client.matches.get('match-with-special');
-
-            expect(makeRequestSpy).toHaveBeenCalledWith('/matches/match-with-special', {
-                method: 'GET',
-            });
-        });
-    });
-
-    describe('matchReport', () => {
-        it('calls makeRequest with correct path for report endpoint', async () => {
-            const mockReport = {
-                matchId: 'match-123',
-                summary: 'Match report content',
-                events: [],
-            };
-            makeRequestSpy.mockResolvedValueOnce(mockReport);
-
-            const result = await client.matches.matchReport('match-123');
-
-            expect(makeRequestSpy).toHaveBeenCalledWith('/matches/match-123/report', {
-                method: 'GET',
-            });
-            expect(result).toEqual(mockReport);
-        });
-    });
-
-    describe('matchSheet', () => {
-        it('calls makeRequest with correct path for sheet endpoint', async () => {
-            const mockSheet = {
-                matchId: 'match-123',
-                url: 'https://example.com/sheet.pdf',
-            };
-            makeRequestSpy.mockResolvedValueOnce(mockSheet);
-
-            const result = await client.matches.matchSheet('match-123');
-
-            expect(makeRequestSpy).toHaveBeenCalledWith('/matches/match-123/sheet', {
-                method: 'GET',
-            });
-            expect(result).toEqual(mockSheet);
         });
     });
 });

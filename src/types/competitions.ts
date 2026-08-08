@@ -1,7 +1,13 @@
 import { MatchDayBaseListQuery } from './api';
-import { MatchDayPerson } from './person';
-import { MatchDaySeasonPartial } from './season';
-import { MatchDayTeamPartial } from './team';
+import {
+    MatchDayHistoryEntry,
+    MatchDayOrganisationRef,
+    MatchDaySeasonFull,
+    MatchDaySeasonWithActive,
+    MatchDayTeamRef,
+} from './common';
+import { MatchDayStatsFilterQuery } from './stats';
+import { MatchDayTeam } from './team';
 
 export enum MatchDayCompetitionType {
     League = 'league',
@@ -9,117 +15,95 @@ export enum MatchDayCompetitionType {
     Friendly = 'friendly',
 }
 
-export type MatchDayCompetitionQuery = MatchDayBaseListQuery & {
-    group?: string[];
-};
-
-export type MatchDayCompetitionPartial = {
-    id: string;
-    name: string;
-    type: MatchDayCompetitionType;
-    activeSeason: MatchDaySeasonPartial;
-    group: MatchDayCompetitionGroupPartial | null;
-    logo: null | string;
-};
-
-export type MatchDayCompetitionGroupPartial = {
-    id: string;
-    name: string;
-    shortName: string;
-    logo: null | string;
-};
-
-export type MatchDayCompetitionHistory = {
-    id: string;
-    name: string | null;
-    logo: string | null;
-    created_at: Date;
+export type MatchDayCompetitionListQuery = MatchDayBaseListQuery & {
+    organisationId?: number;
+    type?: MatchDayCompetitionType;
 };
 
 export type MatchDayCompetition = {
-    seasons: (MatchDaySeasonPartial & { isActiveSeason: boolean })[];
-    history: MatchDayCompetitionHistory[];
-    group: MatchDayCompetitionGroupPartial | null;
-} & Omit<MatchDayCompetitionPartial, 'activeSeason'>;
-
-export type MatchDayCompetitionTableRow = {
-    team: MatchDayTeamPartial;
-    position: number;
-    matchesPlayed: number;
-    won: number;
-    drawn: number;
-    lost: number;
-    goalsFor: number;
-    goalsAgainst: number;
-    goalDifference: number;
-    points: number;
+    id: number;
+    name: string;
+    type: MatchDayCompetitionType;
+    badgeUrl: string | null;
+    sortOrder: number;
+    hidden: boolean;
+    organisation: MatchDayOrganisationRef | null;
 };
 
-export type MatchDayCompetitionStatsSummaryQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    matchGroup?: string[];
+export type MatchDayCompetitionGetQuery = {
+    seasonId?: number;
 };
+
+export enum MatchDayCompetitionMatchGroupType {
+    GameWeek = 'game-week',
+    Pool = 'pool',
+    Knockout = 'knockout',
+    TwoLegged = 'two-legged',
+}
+
+export type MatchDayCompetitionMatchGroupProgression = {
+    toGroupId: number;
+    progressingTeamCount: number | null;
+};
+
+export type MatchDayCompetitionMatchGroup = {
+    id: number;
+    groupName: string;
+    groupType: MatchDayCompetitionMatchGroupType | null;
+    roundNumber: number | null;
+    advancingSpots: number | null;
+    seasonId: number;
+    progressions: MatchDayCompetitionMatchGroupProgression[];
+};
+
+export type MatchDayFullCompetition = MatchDayCompetition & {
+    season: MatchDaySeasonWithActive | null;
+    matchGroups: MatchDayCompetitionMatchGroup[];
+    history?: MatchDayHistoryEntry[];
+};
+
+export type MatchDayCompetitionSeasonsQuery = {
+    seasonId?: number;
+};
+
+export type MatchDayMatchGroupTeam = {
+    matchGroupId: number;
+    team: MatchDayTeamRef;
+    seedNumber: number | null;
+};
+
+export type MatchDayCompetitionStatsSummaryQuery = MatchDayStatsFilterQuery;
 
 export type MatchDayCompetitionStatsSummary = {
     matches: number;
+    teams: number;
     goals: number;
     ownGoals: number;
     goalsPerMatch: number;
     yellowCards: number;
     redCards: number;
     cleanSheets: number;
-    teams: number;
 };
 
-export type MatchDayCompetitionPlayersStatsQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    matchGroup?: string[];
-    team?: string[];
-    orderBy?:
-        | 'name'
-        | 'goals'
-        | 'assists'
-        | 'contributions'
-        | 'yellowCards'
-        | 'redCards'
-        | 'appearances';
-};
+export type MatchDayCompetitionTeamsStatsOrderBy =
+    | 'name'
+    | 'played'
+    | 'wins'
+    | 'goalsFor'
+    | 'goalsAgainst'
+    | 'goalDifference'
+    | 'cleanSheets'
+    | 'yellowCards'
+    | 'redCards'
+    | 'points';
 
-export type MatchDayCompetitionPlayersStats = {
-    player: MatchDayPerson;
-    team: MatchDayTeamPartial;
-    goals: number;
-    assists: number;
-    contributions: number;
-    yellowCards: number;
-    redCards: number;
-    appearances: number;
-};
+export type MatchDayCompetitionTeamsStatsQuery = MatchDayBaseListQuery &
+    MatchDayStatsFilterQuery & {
+        orderBy?: MatchDayCompetitionTeamsStatsOrderBy;
+    };
 
-export type MatchDayCompetitionTeamsStatsQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    matchGroup?: string[];
-    orderBy?:
-        | 'name'
-        | 'goalsFor'
-        | 'goalsAgainst'
-        | 'goalDifference'
-        | 'cleanSheets'
-        | 'yellowCards'
-        | 'redCards'
-        | 'played'
-        | 'wins'
-        | 'points';
-};
-
-export type MatchDayCompetitionTeamsStats = {
-    team: MatchDayTeamPartial;
+export type MatchDayCompetitionTeamStatsRow = {
+    team: MatchDayTeamRef;
     played: number;
     wins: number;
     draws: number;
@@ -131,13 +115,23 @@ export type MatchDayCompetitionTeamsStats = {
     cleanSheets: number;
     yellowCards: number;
     redCards: number;
+    points: number | null;
+};
+
+export type MatchDayCompetitionTableQuery = {
+    seasonId?: number;
+};
+
+export type MatchDayCompetitionTableRow = Omit<MatchDayCompetitionTeamStatsRow, 'points'> & {
+    position: number;
     points: number;
 };
 
-export type MatchDayCompetitionGroup = {
-    id: string;
-    name: string;
-    shortName: string;
-    logo: null | string;
-    competitions: MatchDayCompetitionPartial[];
+export type MatchDayCompetitionTable = {
+    season: MatchDaySeasonFull;
+    items: MatchDayCompetitionTableRow[];
+    totalItems: number;
 };
+
+/** Registered teams for a competition, shaped identically to {@link MatchDayTeam}. */
+export type MatchDayCompetitionTeam = MatchDayTeam;

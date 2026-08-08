@@ -1,16 +1,37 @@
 import { MatchDayBaseListQuery } from './api';
-import { MatchDayCompetitionPartial } from './competitions';
-import { MatchDayPlayerPostition } from './match';
-import { MatchDaySeasonPartial } from './season';
-import { MatchDayTeamPartial } from './team';
+import {
+    MatchDayCompetitionRef,
+    MatchDayPersonRef,
+    MatchDaySeasonRef,
+    MatchDayTeamRef,
+    OneOrMany,
+} from './common';
+import { MatchDayPlayerPosition } from './match';
+import { MatchDayStatsFilterQuery } from './stats';
 
 export enum MatchDayPersonType {
     Player = 'player',
-    Coach = 'coach',
     Staff = 'staff',
-    Referee = 'referee',
+    Coach = 'coach',
     Official = 'official',
 }
+
+export type MatchDayPersonListQuery = MatchDayBaseListQuery & {
+    type?: OneOrMany<MatchDayPersonType>;
+    teamId?: number;
+    competitionId?: number;
+    seasonId?: number;
+};
+
+export type MatchDayPerson = MatchDayPersonRef;
+
+export type MatchDayFullPerson = MatchDayPersonRef & {
+    createdAt: Date;
+    isPlayer: boolean;
+    isStaff: boolean;
+    isCoach: boolean;
+    isOfficial: boolean;
+};
 
 export enum MatchDayPersonRegistrationType {
     Player = 'player',
@@ -20,149 +41,122 @@ export enum MatchDayPersonRegistrationType {
     Mechanic = 'mechanic',
 }
 
-export type MatchDayPersonQuery = MatchDayBaseListQuery & {
-    type?: MatchDayPersonType[];
-};
-
-export type MatchDayPersonRegistrationQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    competition?: string[];
-    type?: MatchDayPersonRegistrationType[];
-};
-
-export type MatchDayPersonAppearancesQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    matchGroup?: string[];
-    position?: ('sub' | 'centre' | 'left' | 'right' | 'goalkeeper')[];
-    season?: string[];
-    competition?: string[];
-    team?: string[];
-};
-
-export type MatchDayPersonStatsSummaryQuery = MatchDayBaseListQuery & {
-    season?: string[];
-    competition?: string[];
-    team?: string[];
-};
-
-export type MatchDayPlayerStatsQuery = MatchDayBaseListQuery & {
-    date?: {
-        lt?: Date;
-        gt?: Date;
-    }[];
-
-    season?: string[];
-    team?: string[];
-    competition?: string[];
-};
-
-export type MatchDayPlayerCardsQuery = MatchDayPlayerStatsQuery & {
-    cardType?: ('yellow' | 'red')[];
-};
-
-export type MatchDayPerson = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    knownAs: string;
+export type MatchDayPersonRegistrationsQuery = MatchDayBaseListQuery & {
+    type?: OneOrMany<MatchDayPersonRegistrationType>;
+    teamId?: number;
+    competitionId?: number;
+    seasonId?: number;
+    activeOnly?: boolean | null;
 };
 
 export type MatchDayPersonRegistration = {
-    type: MatchDayPersonRegistrationType;
+    type: string;
+    number: number | null;
     registeredAt: Date;
-    deregisteredAt: null | Date;
-    deregisteredReason: null | 'deregistration' | 'transferred' | 'other';
-    number: null | number;
-    team: MatchDayTeamPartial;
-    competition: MatchDayCompetitionPartial;
-    season: MatchDaySeasonPartial;
+    deregisteredAt: Date | null;
+    deregisteredReason: string | null;
+    team: MatchDayTeamRef;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
 };
 
-export type MatchDayPersonStatsSummary = {
-    goals: number;
-    assists: number;
-    yellowCards: number;
-    redCards: number;
-    appearances: number;
-    starts: number;
+export type MatchDayPersonAppearancesQuery = MatchDayBaseListQuery & {
+    teamId?: number;
+    competitionId?: number;
+    seasonId?: number;
+    matchGroupId?: number;
+    position?: OneOrMany<MatchDayPlayerPosition>;
+    /** ISO date or datetime string. */
+    scheduledFrom?: string;
+    /** ISO date or datetime string. */
+    scheduledTo?: string;
 };
 
-export type MatchDayPersonStatsGoal = {
-    id: string;
-    matchTime: number | null;
-    matchPeriod: null | number;
-    goalType: 'goal' | 'own_goal';
-    isPenalty: boolean;
-    createdAt: Date;
-    match: {
-        id: string;
-        awayTeam: MatchDayTeamPartial;
-        homeTeam: MatchDayTeamPartial;
-        scheduledFor: Date;
-    };
-    competition: MatchDayCompetitionPartial;
-    season: MatchDaySeasonPartial;
-    team: MatchDayTeamPartial;
-    assister: MatchDayPerson;
+export type MatchDayPersonAppearanceMatchRef = {
+    id: number;
+    status: string;
+    scheduledFor: Date | null;
+    homeTeam: MatchDayTeamRef;
+    awayTeam: MatchDayTeamRef;
 };
 
-export type MatchDayPersonStatsAssist = {
-    id: string;
-    matchTime: number | null;
-    matchPeriod: null | number;
-    goalType: 'goal' | 'own_goal';
-    isPenalty: boolean;
-    createdAt: Date;
-    match: {
-        id: string;
-        awayTeam: MatchDayTeamPartial;
-        homeTeam: MatchDayTeamPartial;
-        scheduledFor: Date;
-    };
-    competition: MatchDayCompetitionPartial;
-    season: MatchDaySeasonPartial;
-    team: MatchDayTeamPartial;
-    scorer: MatchDayPerson;
-};
-
-export type MatchDayPersonStatsCard = {
-    id: string;
-    matchTime: number | null;
-    matchPeriod: null | number;
-    card: 'yellow' | 'red';
-    createdAt: Date;
-    offence: {
-        id: string;
-        code: string;
-        name: string;
-        description: string;
-        suspensionLength: number;
-    };
-    match: {
-        id: string;
-        awayTeam: MatchDayTeamPartial;
-        homeTeam: MatchDayTeamPartial;
-        scheduledFor: Date;
-    };
-    competition: MatchDayCompetitionPartial;
-    season: MatchDaySeasonPartial;
-    team: MatchDayTeamPartial;
+export type MatchDayPersonAppearanceMatchGroupRef = {
+    id: number;
+    name: string;
 };
 
 export type MatchDayPersonAppearance = {
-    squadPosition: MatchDayPlayerPostition;
+    match: MatchDayPersonAppearanceMatchRef;
+    team: MatchDayTeamRef;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
+    matchGroup: MatchDayPersonAppearanceMatchGroupRef | null;
+    squadPosition: string;
     captain: boolean;
-    match: {
-        id: string;
-        awayTeam: MatchDayTeamPartial;
-        homeTeam: MatchDayTeamPartial;
-        scheduledFor: Date;
-    };
-    competition: MatchDayCompetitionPartial;
-    season: MatchDaySeasonPartial;
-    team: MatchDayTeamPartial;
-    matchGroup: { id: string; groupName: string };
+    number: number | null;
+};
+
+export type MatchDayPersonStatsSummaryQuery = MatchDayStatsFilterQuery;
+
+export type MatchDayPersonStatsSummary = {
+    appearances: number;
+    starts: number;
+    goals: number;
+    ownGoals: number;
+    assists: number;
+    penaltiesScored: number;
+    yellowCards: number;
+    redCards: number;
+    contributions: number;
+};
+
+export type MatchDayPersonStatsQuery = MatchDayBaseListQuery & MatchDayStatsFilterQuery;
+
+export type MatchDayPersonStatsMatchRef = {
+    id: number;
+    scheduledFor: Date | null;
+    homeTeam: MatchDayTeamRef;
+    awayTeam: MatchDayTeamRef;
+};
+
+/** A single goal or assist contribution, returned by both the goals and assists endpoints. */
+export type MatchDayPersonGoalContribution = {
+    id: number;
+    matchTime: number | null;
+    matchPeriod: string | null;
+    createdAt: Date;
+    goalType: string;
+    isPenalty: boolean;
+    counterpart: MatchDayPersonRef | null;
+    match: MatchDayPersonStatsMatchRef;
+    team: MatchDayTeamRef;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
+};
+
+export type MatchDayCard = 'yellow' | 'red';
+
+export type MatchDayPersonCardsQuery = MatchDayPersonStatsQuery & {
+    card?: OneOrMany<MatchDayCard>;
+};
+
+export type MatchDayCardOffenceRef = {
+    id: number;
+    name: string;
+    description: string | null;
+    code: string | null;
+    suspensionLength: number;
+};
+
+export type MatchDayPersonCard = {
+    id: number;
+    card: MatchDayCard;
+    matchTime: number | null;
+    matchPeriod: string | null;
+    createdAt: Date;
+    offence: MatchDayCardOffenceRef | null;
+    match: MatchDayPersonStatsMatchRef;
+    team: MatchDayTeamRef;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
 };

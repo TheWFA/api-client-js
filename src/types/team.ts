@@ -1,50 +1,51 @@
 import { MatchDayBaseListQuery } from './api';
-import { MatchDayClubPartial } from './clubs';
-import { MatchDayCompetitionPartial } from './competitions';
-import { MatchDayPerson } from './person';
+import {
+    MatchDayClubRef,
+    MatchDayCompetitionRef,
+    MatchDayHistoryEntry,
+    MatchDayPersonRef,
+    MatchDaySeasonRef,
+    OneOrMany,
+} from './common';
+import { MatchDayStatsFilterQuery } from './stats';
 
 export type MatchDayTeamListQuery = MatchDayBaseListQuery & {
-    season: string[];
-    competition: string[];
+    clubId?: number;
 };
 
-export type MatchDayTeamPartial = {
-    id: string;
+export type MatchDayTeam = {
+    id: number;
     name: string;
-    logo: string;
     abbreviated: string;
     nickname: string;
-};
-
-export type MatchDayTeamHistory = {
-    id: string;
-    name?: string;
-    logo?: string;
-    nickname?: string;
-    abbreviated?: string;
-    primary?: string;
-    secondary?: string;
-};
-
-export type MatchDayTeam = MatchDayTeamPartial & {
+    badgeUrl: string;
+    gradientUrl: string | null;
+    thumbnailImage: string | null;
     primary: string;
     secondary: string;
-    parentClub?: MatchDayClubPartial;
-    history: MatchDayTeam[];
+    club: MatchDayClubRef | null;
 };
 
-export type MatchDayClubHistory = {
-    name?: string;
-    contactEmail?: string;
-    clubLogo?: string;
-    createdAt: Date;
+export type MatchDayFullTeam = MatchDayTeam & {
+    history?: MatchDayHistoryEntry[];
+};
+
+export type MatchDayActiveOnlyFilter = 'true' | 'false';
+
+export type MatchDayTeamPlayersQuery = MatchDayBaseListQuery & {
+    competitionId?: number;
+    seasonId?: number;
+    activeOnly?: MatchDayActiveOnlyFilter;
 };
 
 export type MatchDayTeamPlayerRegistration = {
-    player: MatchDayPerson;
-    competition: MatchDayCompetitionPartial;
+    person: MatchDayPersonRef;
+    number: number | null;
     registeredAt: Date;
-    number: number;
+    deregisteredAt: Date | null;
+    deregisteredReason: string | null;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
 };
 
 export enum MatchDayTeamStaffRole {
@@ -54,39 +55,46 @@ export enum MatchDayTeamStaffRole {
     Assistant = 'assistant',
 }
 
+export type MatchDayTeamStaffQuery = MatchDayBaseListQuery & {
+    competitionId?: number;
+    seasonId?: number;
+    activeOnly?: MatchDayActiveOnlyFilter;
+    role?: OneOrMany<MatchDayTeamStaffRole>;
+};
+
 export type MatchDayTeamStaffRegistration = {
-    person: MatchDayPerson;
-    competition: MatchDayCompetitionPartial;
-    registeredAt: Date;
+    person: MatchDayPersonRef;
     role: MatchDayTeamStaffRole | null;
+    registeredAt: Date;
+    deregisteredAt: Date | null;
+    deregisteredReason: string | null;
+    competition: MatchDayCompetitionRef;
+    season: MatchDaySeasonRef;
 };
 
-export type TeamPlayersStatsQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    competition?: string[];
-    matchGroup?: string[];
-    orderBy?:
-        | 'name'
-        | 'goals'
-        | 'assists'
-        | 'contributions'
-        | 'yellowCards'
-        | 'redCards'
-        | 'appearances';
+export type MatchDayTeamRegistrationsQuery = MatchDayBaseListQuery & {
+    competitionId?: number;
+    seasonId?: number;
 };
 
-export type TeamStaffQuery = MatchDayBaseListQuery & {
-    season?: string[];
-    competition?: string[];
-    role?: ('head-coach' | 'assistant-coach' | 'assistant' | 'mechanic')[];
+export type MatchDayTeamRegistration = {
+    registeredAt: Date;
+    competition: MatchDayCompetitionRef & { type: string };
+    season: MatchDaySeasonRef;
 };
 
-export type TeamStatsSummaryQuery = MatchDayBaseListQuery & {
-    from?: Date;
-    to?: Date;
-    season?: string[];
-    competition?: string[];
-    matchGroup?: string[];
+export type MatchDayTeamStatsSummaryQuery = MatchDayStatsFilterQuery;
+
+export type MatchDayTeamStatsSummary = {
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    goalsFor: number;
+    goalsAgainst: number;
+    goalDifference: number;
+    cleanSheets: number;
+    yellowCards: number;
+    redCards: number;
+    playersUsed: number;
 };

@@ -21,6 +21,10 @@ function createMockResponse(
     } as Response;
 }
 
+function errorBody(code: string, message: string) {
+    return { error: { code, message } };
+}
+
 describe('httpResponseToAPIError', () => {
     describe('successful responses', () => {
         it('returns undefined for 200 OK response', async () => {
@@ -43,45 +47,20 @@ describe('httpResponseToAPIError', () => {
     });
 
     describe('400 Bad Request', () => {
-        it('returns MatchDayBadRequestError with message', async () => {
-            const res = createMockResponse(400, { message: 'Invalid input' }, false);
+        it('returns MatchDayBadRequestError with message and code', async () => {
+            const res = createMockResponse(400, errorBody('invalid_input', 'Invalid input'), false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayBadRequestError);
             expect(error?.message).toBe('Invalid input');
             expect(error?.status).toBe(400);
-        });
-
-        it('includes validation issues when present', async () => {
-            const validationIssues = [
-                { path: 'email', message: 'Invalid email format', code: 'invalid_format' },
-                { path: 'name', message: 'Name is required', code: 'required' },
-            ];
-            const res = createMockResponse(
-                400,
-                { message: 'Validation failed', errors: validationIssues },
-                false,
-            );
-            const error = await httpResponseToAPIError(res);
-
-            expect(error).toBeInstanceOf(MatchDayBadRequestError);
-            const badRequestError = error as MatchDayBadRequestError;
-            expect(badRequestError.validationIssues).toEqual(validationIssues);
-        });
-
-        it('handles response without validation issues', async () => {
-            const res = createMockResponse(400, { message: 'Bad request' }, false);
-            const error = await httpResponseToAPIError(res);
-
-            expect(error).toBeInstanceOf(MatchDayBadRequestError);
-            const badRequestError = error as MatchDayBadRequestError;
-            expect(badRequestError.validationIssues).toBeUndefined();
+            expect(error?.code).toBe('invalid_input');
         });
     });
 
     describe('401 Unauthorized', () => {
         it('returns MatchDayUnauthorizedError with message', async () => {
-            const res = createMockResponse(401, { message: 'Invalid token' }, false);
+            const res = createMockResponse(401, errorBody('invalid_token', 'Invalid token'), false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayUnauthorizedError);
@@ -92,7 +71,7 @@ describe('httpResponseToAPIError', () => {
 
     describe('403 Forbidden', () => {
         it('returns MatchDayForbiddenError with message', async () => {
-            const res = createMockResponse(403, { message: 'Access denied' }, false);
+            const res = createMockResponse(403, errorBody('forbidden', 'Access denied'), false);
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayForbiddenError);
@@ -103,7 +82,11 @@ describe('httpResponseToAPIError', () => {
 
     describe('404 Not Found', () => {
         it('returns MatchDayNotFoundError with message', async () => {
-            const res = createMockResponse(404, { message: 'Resource not found' }, false);
+            const res = createMockResponse(
+                404,
+                errorBody('not_found', 'Resource not found'),
+                false,
+            );
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayNotFoundError);
@@ -114,7 +97,11 @@ describe('httpResponseToAPIError', () => {
 
     describe('429 Rate Limit Exceeded', () => {
         it('returns MatchDayExceededRateLimitError with message', async () => {
-            const res = createMockResponse(429, { message: 'Too many requests' }, false);
+            const res = createMockResponse(
+                429,
+                errorBody('rate_limited', 'Too many requests'),
+                false,
+            );
             const error = await httpResponseToAPIError(res);
 
             expect(error).toBeInstanceOf(MatchDayExceededRateLimitError);
@@ -184,11 +171,11 @@ describe('Error classes', () => {
         });
 
         it('toDebugJSON returns correct structure', () => {
-            const error = new MatchDayAPIError('Test error', 500);
+            const error = new MatchDayAPIError('Test error', 500, 'test_code');
             const debug = error.toDebugJSON();
             expect(debug).toEqual({
                 status: 500,
-                body: { message: 'Test error' },
+                body: { code: 'test_code', message: 'Test error' },
             });
         });
     });
@@ -201,10 +188,10 @@ describe('Error classes', () => {
             expect(error.name).toBe('MatchDayBadRequestError');
         });
 
-        it('creates error with validation issues', () => {
-            const issues = [{ path: 'email', message: 'Invalid', code: 'invalid' }];
-            const error = new MatchDayBadRequestError('Validation failed', issues);
-            expect(error.validationIssues).toEqual(issues);
+        it('creates error with custom message and code', () => {
+            const error = new MatchDayBadRequestError('Validation failed', 'validation_error');
+            expect(error.message).toBe('Validation failed');
+            expect(error.code).toBe('validation_error');
         });
     });
 

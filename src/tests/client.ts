@@ -1,9 +1,8 @@
-import { MatchDayClient, MatchDayOAuthClient } from '..';
+import { MatchDayClient } from '..';
 
 // Global singleton type
 declare global {
     var __matchDayClient: MatchDayClient | undefined;
-    var _matchDayOAuthClient: MatchDayOAuthClient | undefined;
 }
 
 export function getTestClient(): MatchDayClient {
@@ -18,25 +17,4 @@ export function getTestClient(): MatchDayClient {
         });
     }
     return globalThis.__matchDayClient;
-}
-
-export function getTestOAuthClient(): MatchDayOAuthClient {
-    if (!globalThis._matchDayOAuthClient) {
-        const clientId = process.env.CLIENT_ID;
-        if (!clientId) {
-            throw new Error('Missing CLIENT_ID in environment');
-        }
-
-        const clientSecret = process.env.CLIENT_SECRET;
-        if (!clientId) {
-            throw new Error('Missing CLIENT_SECRET in environment');
-        }
-
-        globalThis._matchDayOAuthClient = new MatchDayOAuthClient({
-            clientId,
-            clientSecret,
-            authURL: process.env.MATCHDAY_AUTH_URL,
-        });
-    }
-    return globalThis._matchDayOAuthClient;
 }
