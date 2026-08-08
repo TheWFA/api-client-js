@@ -1,6 +1,6 @@
 /**
  * Integration tests that run against the real API.
- * These tests are skipped if the required environment variables are not set.
+ * These tests are skipped unless both API_KEY and MATCHDAY_API_URL are set.
  *
  * To run these tests locally, ensure the API is running and .env is configured.
  * To skip these tests locally, rename or remove your .env file.
@@ -13,7 +13,7 @@ import { MatchDayNotFoundError, MatchDayUnauthorizedError } from '../../types/er
 // Increase timeout for integration tests (30 seconds)
 jest.setTimeout(30000);
 
-const hasApiCredentials = !!process.env.API_KEY;
+const hasApiCredentials = !!process.env.API_KEY && !!process.env.MATCHDAY_API_URL;
 
 const describeWithApi = hasApiCredentials ? describe : describe.skip;
 
@@ -384,5 +384,5 @@ describeWithApi('API Integration Tests', () => {
 
 // Log skip message if tests are skipped
 if (!hasApiCredentials) {
-    console.log('Skipping API integration tests: API_KEY not set');
+    console.log('Skipping API integration tests: API_KEY and/or MATCHDAY_API_URL not set');
 }
