@@ -2,9 +2,7 @@ import { MatchDayClient, MatchDayOAuthClient } from '..';
 
 // Global singleton type
 declare global {
-    // eslint-disable-next-line no-var
     var __matchDayClient: MatchDayClient | undefined;
-    // eslint-disable-next-line no-var
     var _matchDayOAuthClient: MatchDayOAuthClient | undefined;
 }
 

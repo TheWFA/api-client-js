@@ -1,6 +1,7 @@
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 // Matches ISO datetime with T or space separator, optional milliseconds, optional timezone (with or without colon, minutes optional)
-const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}(?::?\d{2})?)?$/;
+const ISO_DATETIME =
+    /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}(?::?\d{2})?)?$/;
 
 function isIsoDateString(value: string): boolean {
     if (typeof value !== 'string') return false;

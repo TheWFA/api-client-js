@@ -4,8 +4,8 @@
 
 A TypeScript/JavaScript client for accessing **Wheelchair Football Association (WFA)** data.
 
-* **Docs:** [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
-* **Developer portal (tokens):** [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
+- **Docs:** [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
+- **Developer portal (tokens):** [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
 
 > This library aims to provide a clean, typed interface to the WFA API with first‑class TypeScript support, ESM/CJS builds, and friendly DX.
 
@@ -13,11 +13,11 @@ A TypeScript/JavaScript client for accessing **Wheelchair Football Association (
 
 ## Features
 
-* ✅ TypeScript types for requests and responses
-* ✅ ESM & CommonJS builds
-* ✅ Token-based auth (`Authorization: Token <token>`)
-* ✅ Built-in helpers for common queries (matches, teams, competitions, etc.)
-* ✅ Works in Node 18+ and modern browsers
+- ✅ TypeScript types for requests and responses
+- ✅ ESM & CommonJS builds
+- ✅ Token-based auth (`Authorization: Token <token>`)
+- ✅ Built-in helpers for common queries (matches, teams, competitions, etc.)
+- ✅ Works in Node 18+ and modern browsers
 
 ---
 
@@ -42,8 +42,8 @@ bun add @thewfa/api-client
 ## Authentication
 
 1. Create an application and generate an access token in the **Developer Portal**:
+    - [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
 
-   * [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
 2. Pass your token to the client. The client will send it as:
 
 ```
@@ -63,13 +63,13 @@ import { MatchDayClient } from '@thewfa/api-client';
 
 // Prefer loading the token from env vars or your secret store
 const client = new MatchDayClient({
-  token: process.env.WFA_API_TOKEN!,
+    token: process.env.WFA_API_TOKEN!,
 });
 
 // List the latest matches
 await client.matches.list({
-  orderBy: { date: 'desc' },
-  limit: 20,
+    orderBy: { date: 'desc' },
+    limit: 20,
 });
 
 // Fetch a single match by ID
@@ -85,9 +85,9 @@ const { MatchDayClient } = require('@thewfa/api-client');
 const client = new MatchDayClient({ token: process.env.WFA_API_TOKEN });
 
 client.matches
-  .list({ limit: 10 })
-  .then(res => console.log(res))
-  .catch(err => console.error(err));
+    .list({ limit: 10 })
+    .then((res) => console.log(res))
+    .catch((err) => console.error(err));
 ```
 
 ---
@@ -96,10 +96,10 @@ client.matches
 
 ```ts
 type WfaClientOptions = {
-  /** Required: access token from the developer portal */
-  token: string;
-  /** Optional: API base URL override (defaults to the official base) */
-  baseUrl?: string;
+    /** Required: access token from the developer portal */
+    token: string;
+    /** Optional: API base URL override (defaults to the official base) */
+    baseUrl?: string;
 };
 ```
 
@@ -107,22 +107,21 @@ type WfaClientOptions = {
 
 ## Errors & Retries
 
-* Network and HTTP errors throw `APIError` with:
+- Network and HTTP errors throw `APIError` with:
 
-* `message` (human‑readable)
-* `data` (parsed error body when available)
-* Add your own retry policy with a wrapper (e.g., `p-retry`).
+- `message` (human‑readable)
+- `data` (parsed error body when available)
+- Add your own retry policy with a wrapper (e.g., `p-retry`).
 
 ```ts
 try {
-  await client.matches.get('bad_id');
+    await client.matches.get('bad_id');
 } catch (e) {
-  if (e instanceof NotFoundError) {
-    // not found
-  }
+    if (e instanceof NotFoundError) {
+        // not found
+    }
 }
 ```
-
 
 ---
 
@@ -160,8 +159,8 @@ A: The client defaults to the official WFA API base. You can override it via `ba
 
 ## Links
 
-* API docs: [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
-* Developer portal: [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
+- API docs: [https://docs.thewfa.org.uk](https://docs.thewfa.org.uk)
+- Developer portal: [https://developers.thewfa.org.uk](https://developers.thewfa.org.uk)
 
 ---
 

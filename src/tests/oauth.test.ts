@@ -315,11 +315,7 @@ describe('MatchDayOAuthClient', () => {
                 clientId: 'public-client',
             });
 
-            await client.exchange(
-                'auth-code',
-                'http://localhost:3000/callback',
-                'pkce-verifier',
-            );
+            await client.exchange('auth-code', 'http://localhost:3000/callback', 'pkce-verifier');
 
             const callArgs = (global.fetch as jest.Mock).mock.calls[0];
             const body = new URLSearchParams(callArgs[1].body);
