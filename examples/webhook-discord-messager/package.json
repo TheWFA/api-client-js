@@ -1,0 +1,26 @@
+{
+    "name": "webhook-discord-messager-example",
+    "private": true,
+    "version": "0.0.0",
+    "description": "Verifies a WFA webhook delivery and forwards it to a Discord channel via an incoming webhook. Deployable to AWS Lambda or any Node 18+ host.",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "build:lambda": "esbuild src/lambda.ts --bundle --platform=node --target=node18 --format=cjs --outfile=dist/lambda.js",
+        "start": "tsx src/server.ts",
+        "dev": "tsx watch src/server.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@thewfa/api-client": "file:../.."
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.162",
+        "@types/node": "^24",
+        "esbuild": "^0.28.2",
+        "tsx": "^4.23.12",
+        "typescript": "^6"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}

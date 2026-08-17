@@ -7,7 +7,15 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
     {
-        ignores: ['dist/**', 'coverage/**', 'node_modules/**', '*.config.{js,cjs,ts}'],
+        ignores: [
+            'dist/**',
+            'coverage/**',
+            'node_modules/**',
+            '*.config.{js,cjs,ts}',
+            'scripts/**',
+            // Standalone example apps with their own package.json/tsconfig — not part of this lint project.
+            'examples/**',
+        ],
     },
     js.configs.recommended,
     ...tseslint.configs.recommended,
