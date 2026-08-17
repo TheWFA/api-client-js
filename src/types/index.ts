@@ -19,3 +19,4 @@ export * from './stats';
 export * from './suspensions';
 export * from './team';
 export * from './ties';
+export * from './webhooks';
