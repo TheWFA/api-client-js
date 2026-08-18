@@ -13,7 +13,7 @@ import { MatchDayForbiddenError, MatchDayNotFoundError } from '../../types/error
 // Increase timeout for integration tests (30 seconds)
 jest.setTimeout(30000);
 
-const hasApiCredentials = !!process.env.API_KEY && !!process.env.MATCHDAY_API_URL;
+const hasApiCredentials = !!process.env.API_KEY;
 
 const describeWithApi = hasApiCredentials ? describe : describe.skip;
 
