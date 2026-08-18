@@ -360,10 +360,13 @@ describeWithApi('API Integration Tests', () => {
         // Rejected by API Gateway's usage plan before the request reaches the API,
         // so this surfaces as a 403 rather than an application-level 401.
         it('throws MatchDayForbiddenError for invalid API key', async () => {
-            const invalidClient = new MatchDayClient({
-                apiKey: 'invalid-api-key',
-                baseURL: process.env.MATCHDAY_API_URL,
-            });
+            const invalidConf: APIClientConfig = { apiKey: 'invalid-api-key' };
+
+            if (process.env.MATCHDAY_API_URL) {
+                invalidConf['baseURL'] = process.env.MATCHDAY_API_URL;
+            }
+
+            const invalidClient = new MatchDayClient(invalidConf);
 
             await expect(invalidClient.matches.list({ itemsPerPage: 1 })).rejects.toThrow(
                 MatchDayForbiddenError,
@@ -371,10 +374,13 @@ describeWithApi('API Integration Tests', () => {
         });
 
         it('throws MatchDayForbiddenError with correct status code', async () => {
-            const invalidClient = new MatchDayClient({
-                apiKey: 'invalid-api-key',
-                baseURL: process.env.MATCHDAY_API_URL,
-            });
+            const invalidConf: APIClientConfig = { apiKey: 'invalid-api-key' };
+
+            if (process.env.MATCHDAY_API_URL) {
+                invalidConf['baseURL'] = process.env.MATCHDAY_API_URL;
+            }
+
+            const invalidClient = new MatchDayClient(invalidConf);
 
             try {
                 await invalidClient.matches.list({ itemsPerPage: 1 });
