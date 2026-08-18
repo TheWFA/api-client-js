@@ -6,7 +6,7 @@
  * To skip these tests locally, rename or remove your .env file.
  */
 
-import { MatchDayClient } from '../../client';
+import { APIClientConfig, MatchDayClient } from '../../client';
 import { MatchDayHistoryEntity } from '../../types/common';
 import { MatchDayForbiddenError, MatchDayNotFoundError } from '../../types/errors';
 
@@ -21,10 +21,13 @@ let client: MatchDayClient;
 
 beforeAll(() => {
     if (hasApiCredentials) {
-        client = new MatchDayClient({
-            apiKey: process.env.API_KEY!,
-            baseURL: process.env.MATCHDAY_API_URL,
-        });
+        const conf: APIClientConfig = { apiKey: process.env.API_KEY! };
+
+        if (process.env.MATCHDAY_API_URL) {
+            conf['baseURL'] = process.env.MATCHDAY_API_URL;
+        }
+
+        client = new MatchDayClient(conf);
     }
 });
 
