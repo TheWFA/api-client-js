@@ -1,5 +1,11 @@
 # @thewfa/api-client
 
+## 1.2.0
+
+### Minor Changes
+
+- e61a285: Added an `id` filter to `client.matches.list()` for fetching multiple matches by id, and added `assister` to goal events returned by `client.matches.get()`.
+
 ## 1.1.0
 
 ### Minor Changes
