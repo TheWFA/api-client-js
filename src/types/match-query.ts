@@ -3,6 +3,7 @@ import { OneOrMany } from './common';
 import { MatchDayMatchStatus } from './match';
 
 export type MatchDayMatchQuery = MatchDayBaseListQuery & {
+    id?: OneOrMany<number>;
     teamId?: OneOrMany<number>;
     competitionId?: OneOrMany<number>;
     organisationId?: OneOrMany<number>;

@@ -57,6 +57,7 @@ describe('MatchResource', () => {
             await client.matches.list({
                 itemsPerPage: 20,
                 page: 2,
+                id: [1, 2],
                 seasonId: [123],
                 competitionId: [456],
                 status: [MatchDayMatchStatus.Scheduled],
@@ -68,6 +69,7 @@ describe('MatchResource', () => {
             const path = makeRequestSpy.mock.calls[0][0] as string;
             expect(path).toContain('itemsPerPage=20');
             expect(path).toContain('page=2');
+            expect(path).toContain('id%5B0%5D=1');
             expect(path).toContain('seasonId%5B0%5D=123');
         });
 

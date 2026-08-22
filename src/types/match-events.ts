@@ -31,6 +31,7 @@ export type MatchDayBaseMatchEvent = {
 export type MatchDayGoalMatchEvent = MatchDayBaseMatchEvent & {
     type: MatchDayMatchEventType.Goal;
     player: MatchDayPersonRef;
+    assister: MatchDayPersonRef | null;
     penalty: boolean;
     goalType: MatchDayGoalType;
 };
