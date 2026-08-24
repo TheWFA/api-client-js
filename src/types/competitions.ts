@@ -5,6 +5,7 @@ import {
     MatchDaySeasonFull,
     MatchDaySeasonWithActive,
     MatchDayTeamRef,
+    OneOrMany,
 } from './common';
 import { MatchDayStatsFilterQuery } from './stats';
 import { MatchDayTeam } from './team';
@@ -16,6 +17,7 @@ export enum MatchDayCompetitionType {
 }
 
 export type MatchDayCompetitionListQuery = MatchDayBaseListQuery & {
+    id?: OneOrMany<number>;
     organisationId?: number;
     type?: MatchDayCompetitionType;
 };

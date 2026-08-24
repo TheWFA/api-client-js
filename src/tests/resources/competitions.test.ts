@@ -39,6 +39,22 @@ describe('CompetitionsResource', () => {
             });
             expect(result).toEqual(mockResponse);
         });
+
+        it('supports filtering by id', async () => {
+            const mockResponse: ListResponse<unknown> = {
+                items: [],
+                totalItems: 0,
+                page: 1,
+                itemsPerPage: 20,
+            };
+            makeRequestSpy.mockResolvedValueOnce(mockResponse);
+
+            await client.competitions.list({ id: [1, 2] });
+
+            const path = makeRequestSpy.mock.calls[0][0] as string;
+            expect(path).toContain('id=1');
+            expect(path).toContain('id=2');
+        });
     });
 
     describe('get', () => {

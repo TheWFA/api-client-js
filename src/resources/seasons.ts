@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import { MatchDayFullSeason, MatchDaySeason, MatchDaySeasonListQuery } from '../types/season';
 import { ListResponse } from '../types/list-response';
@@ -20,7 +19,7 @@ export class SeasonsResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDaySeasonListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDaySeason>>(
             this.basePath + '?' + queryString,

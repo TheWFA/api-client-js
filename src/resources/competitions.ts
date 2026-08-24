@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import {
     MatchDayCompetition,
@@ -31,7 +30,7 @@ export class CompetitionsStatsResource extends APIResource {
      * Retrieves aggregate statistics for a competition.
      */
     async summary(id: number, query: MatchDayCompetitionStatsSummaryQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<MatchDayCompetitionStatsSummary>(
             this.basePath + '/' + id + '/stats/summary?' + queryString,
@@ -45,7 +44,7 @@ export class CompetitionsStatsResource extends APIResource {
      * Retrieves per-team aggregate statistics for a competition.
      */
     async teams(id: number, query: MatchDayCompetitionTeamsStatsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayCompetitionTeamStatsRow>>(
             this.basePath + '/' + id + '/stats/teams?' + queryString,
@@ -59,7 +58,7 @@ export class CompetitionsStatsResource extends APIResource {
      * Retrieves per-player aggregate statistics for a competition.
      */
     async players(id: number, query: MatchDayPlayerStatsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPlayerStatsRow>>(
             this.basePath + '/' + id + '/stats/players?' + queryString,
@@ -87,7 +86,7 @@ export class CompetitionsResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDayCompetitionListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayCompetition>>(
             this.basePath + '?' + queryString,
@@ -103,7 +102,7 @@ export class CompetitionsResource extends APIResource {
      * @throws {MatchDayAPIError} If the request fails, the competition is not found, or the server responds with an error.
      */
     async get(id: number, query: MatchDayCompetitionGetQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<MatchDayFullCompetition>(
             this.basePath + '/' + id + '?' + queryString,
@@ -117,7 +116,7 @@ export class CompetitionsResource extends APIResource {
      * Retrieves the teams registered for a competition and season.
      */
     async teams(id: number, query: MatchDayCompetitionSeasonsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<UnpaginatedListResponse<MatchDayCompetitionTeam>>(
             this.basePath + '/' + id + '/teams?' + queryString,
@@ -145,7 +144,7 @@ export class CompetitionsResource extends APIResource {
      * Returns 400 for cup and friendly competitions, and for a competition with no registered season.
      */
     async table(id: number, query: MatchDayCompetitionTableQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<MatchDayCompetitionTable>(
             this.basePath + '/' + id + '/table?' + queryString,

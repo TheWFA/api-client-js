@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import { MatchDaySuspension, MatchDaySuspensionListQuery } from '../types/suspensions';
 import { ListResponse } from '../types/list-response';
@@ -22,7 +21,7 @@ export class SuspensionsResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDaySuspensionListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDaySuspension>>(
             this.basePath + '?' + queryString,

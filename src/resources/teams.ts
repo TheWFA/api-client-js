@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import {
     MatchDayFullTeam,
@@ -32,7 +31,7 @@ export class TeamsStatsResource extends APIResource {
      * const stats = await client.teams.stats.summary(123, { seasonId: 2025 });
      */
     async summary(id: number, query: MatchDayTeamStatsSummaryQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<MatchDayTeamStatsSummary>(
             this.basePath + '/' + id + '/stats/summary?' + queryString,
@@ -49,7 +48,7 @@ export class TeamsStatsResource extends APIResource {
      * const players = await client.teams.stats.players(123, { orderBy: 'goals' });
      */
     async players(id: number, query: MatchDayPlayerStatsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPlayerStatsRow>>(
             this.basePath + '/' + id + '/stats/players?' + queryString,
@@ -77,7 +76,7 @@ export class TeamsResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDayTeamListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayTeam>>(
             this.basePath + '?' + queryString,
@@ -102,7 +101,7 @@ export class TeamsResource extends APIResource {
      * Retrieves the playing roster for a team.
      */
     async players(id: number, query: MatchDayTeamPlayersQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayTeamPlayerRegistration>>(
             `${this.basePath}/${id}/players?${queryString}`,
@@ -116,7 +115,7 @@ export class TeamsResource extends APIResource {
      * Retrieves the staff roster for a team.
      */
     async staff(id: number, query: MatchDayTeamStaffQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayTeamStaffRegistration>>(
             `${this.basePath}/${id}/staff?${queryString}`,
@@ -130,7 +129,7 @@ export class TeamsResource extends APIResource {
      * Retrieves the competitions and seasons a team is entered into.
      */
     async registrations(id: number, query: MatchDayTeamRegistrationsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayTeamRegistration>>(
             `${this.basePath}/${id}/registrations?${queryString}`,

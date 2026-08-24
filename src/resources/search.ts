@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import { MatchDaySearchItem, MatchDaySearchQuery } from '../types/search';
 import { ListResponse } from '../types/list-response';
@@ -21,7 +20,7 @@ export class SearchResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDaySearchQuery) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDaySearchItem>>(
             this.basePath + '?' + queryString,

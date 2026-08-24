@@ -69,8 +69,9 @@ describe('MatchResource', () => {
             const path = makeRequestSpy.mock.calls[0][0] as string;
             expect(path).toContain('itemsPerPage=20');
             expect(path).toContain('page=2');
-            expect(path).toContain('id%5B0%5D=1');
-            expect(path).toContain('seasonId%5B0%5D=123');
+            expect(path).toContain('id=1');
+            expect(path).toContain('id=2');
+            expect(path).toContain('seasonId=123');
         });
 
         it('returns empty items array when no matches found', async () => {

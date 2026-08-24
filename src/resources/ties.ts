@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import { MatchDayTie, MatchDayTieListQuery } from '../types/ties';
 import { ListResponse } from '../types/list-response';
@@ -21,7 +20,7 @@ export class TiesResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDayTieListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayTie>>(
             this.basePath + '?' + queryString,

@@ -10,6 +10,7 @@ import {
 import { MatchDayStatsFilterQuery } from './stats';
 
 export type MatchDayTeamListQuery = MatchDayBaseListQuery & {
+    id?: OneOrMany<number>;
     clubId?: number;
 };
 

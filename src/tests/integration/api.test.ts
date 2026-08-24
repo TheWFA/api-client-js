@@ -58,6 +58,19 @@ describeWithApi('API Integration Tests', () => {
                 expect(match).toHaveProperty('events');
             }
         });
+
+        it('filters matches by id', async () => {
+            const response = await client.matches.list({ itemsPerPage: 2 });
+
+            if (response.items.length < 2) {
+                return;
+            }
+
+            const ids = response.items.map((item) => item.id);
+            const filtered = await client.matches.list({ id: ids, itemsPerPage: ids.length });
+
+            expect(filtered.items.map((item) => item.id).sort()).toEqual([...ids].sort());
+        });
     });
 
     describe('Teams', () => {
@@ -76,6 +89,19 @@ describeWithApi('API Integration Tests', () => {
                 expect(team).toHaveProperty('id');
                 expect(team.id).toBe(response.items[0].id);
             }
+        });
+
+        it('filters teams by id', async () => {
+            const response = await client.teams.list({ itemsPerPage: 2 });
+
+            if (response.items.length < 2) {
+                return;
+            }
+
+            const ids = response.items.map((item) => item.id);
+            const filtered = await client.teams.list({ id: ids, itemsPerPage: ids.length });
+
+            expect(filtered.items.map((item) => item.id).sort()).toEqual([...ids].sort());
         });
     });
 
@@ -116,6 +142,19 @@ describeWithApi('API Integration Tests', () => {
                 expect(competition).toHaveProperty('id');
                 expect(competition.id).toBe(response.items[0].id);
             }
+        });
+
+        it('filters competitions by id', async () => {
+            const response = await client.competitions.list({ itemsPerPage: 2 });
+
+            if (response.items.length < 2) {
+                return;
+            }
+
+            const ids = response.items.map((item) => item.id);
+            const filtered = await client.competitions.list({ id: ids, itemsPerPage: ids.length });
+
+            expect(filtered.items.map((item) => item.id).sort()).toEqual([...ids].sort());
         });
     });
 

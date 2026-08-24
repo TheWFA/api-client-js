@@ -1,5 +1,4 @@
-import qs from 'qs';
-
+import { stringifyQuery } from '../utils/query';
 import { MatchDayClient } from '../client';
 import {
     MatchDayFullPerson,
@@ -30,7 +29,7 @@ export class PersonsStatsResource extends APIResource {
      * Retrieves a summary of a person's career statistics.
      */
     async summary(id: number, query: MatchDayPersonStatsSummaryQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<MatchDayPersonStatsSummary>(
             this.basePath + '/' + id + '/stats/summary?' + queryString,
@@ -44,7 +43,7 @@ export class PersonsStatsResource extends APIResource {
      * Retrieves the goals scored by a person.
      */
     async goals(id: number, query: MatchDayPersonStatsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPersonGoalContribution>>(
             this.basePath + '/' + id + '/stats/goals?' + queryString,
@@ -58,7 +57,7 @@ export class PersonsStatsResource extends APIResource {
      * Retrieves the assists made by a person.
      */
     async assists(id: number, query: MatchDayPersonStatsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPersonGoalContribution>>(
             this.basePath + '/' + id + '/stats/assists?' + queryString,
@@ -72,7 +71,7 @@ export class PersonsStatsResource extends APIResource {
      * Retrieves the cards received by a person.
      */
     async cards(id: number, query: MatchDayPersonCardsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPersonCard>>(
             this.basePath + '/' + id + '/stats/cards?' + queryString,
@@ -101,7 +100,7 @@ export class PersonsResource extends APIResource {
      * console.log(response.totalItems);
      */
     async list(query: MatchDayPersonListQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPerson>>(
             this.basePath + '?' + queryString,
@@ -126,7 +125,7 @@ export class PersonsResource extends APIResource {
      * Retrieves a person's playing and staff registrations, newest first.
      */
     async registrations(id: number, query: MatchDayPersonRegistrationsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPersonRegistration>>(
             this.basePath + '/' + id + '/registrations?' + queryString,
@@ -140,7 +139,7 @@ export class PersonsResource extends APIResource {
      * Retrieves a person's match appearances.
      */
     async appearances(id: number, query: MatchDayPersonAppearancesQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDayPersonAppearance>>(
             this.basePath + '/' + id + '/appearances?' + queryString,
@@ -154,7 +153,7 @@ export class PersonsResource extends APIResource {
      * Retrieves a person's suspensions.
      */
     async suspensions(id: number, query: MatchDayPersonSuspensionsQuery = {}) {
-        const queryString = qs.stringify(query);
+        const queryString = stringifyQuery(query);
 
         return this.client.makeRequest<ListResponse<MatchDaySuspension>>(
             this.basePath + '/' + id + '/suspensions?' + queryString,
