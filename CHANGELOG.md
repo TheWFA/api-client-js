@@ -1,5 +1,15 @@
 # @thewfa/api-client
 
+## 1.3.0
+
+### Minor Changes
+
+- 2a08584: Added an `id` filter to `client.competitions.list()` and `client.teams.list()` for fetching multiple competitions or teams by id.
+
+### Patch Changes
+
+- 2a08584: Fixed array query parameters (e.g. `id`, `teamId`, `status`, `role`, `type`, `card`, `position`) being silently dropped by the API. They were serialized as `key[0]=1&key[1]=2`, which the server's query parser treats as literal, unrelated keys rather than an array — the filter was ignored with no error. Arrays are now serialized as repeated keys (`key=1&key=2`), which the server parses correctly.
+
 ## 1.2.0
 
 ### Minor Changes
